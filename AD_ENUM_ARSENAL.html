@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="container">
-<header><h1>⚔️ AD ENUM ARSENAL </h1><p class="subtitle">Active Directory Enumeration Command Generator</p><p class="author">Created by @mahdiesta</p></header>
+<header><h1>⚔️ AD ENUM ARSENAL ⚔️</h1><p class="subtitle">Active Directory Enumeration Command Generator</p><p class="author">Created by @mahdiesta</p></header>
 <div class="control-panel">
 <div class="phase-selector">
 <button class="phase-btn active" onclick="switchPhase('external')">🌐 External Reconnaissance</button>
@@ -64,12 +64,12 @@ const db={external:{dc_discovery:{title:"DC Discovery (Quick Start)",icon:"🎯"
 {title:"Scan for DC Ports",description:"Find DCs by port scan",command:"nmap -p 88,389,636,3268,3269 {{target}}/24 --open -oG - | grep 'Ports:' | awk '{print $2}'",platform:"linux",auth:"no-creds",tags:["Port Scan"]}
 ]},
 osint:{title:"OSINT & Reconnaissance",icon:"🔍",description:"Open Source Intelligence gathering",commands:[
-{title:"BGP ASN Lookup",description:"Discover IP ranges and ASN",command:"# Navigate to: https://bgp.he.net\\n# Search for: {{domain}} or {{company}}",platform:"web",auth:"no-creds",tags:["ASN"]},
-{title:"ViewDNS Reverse IP",description:"Find domains on same IP",command:"# Navigate to: https://viewdns.info/reverseip/\\n# Enter IP: {{target}}",platform:"web",auth:"no-creds",tags:["Reverse IP"]},
-{title:"Domaintools",description:"WHOIS and DNS history",command:"# Navigate to: https://domaintools.com\\n# Search: {{domain}}",platform:"web",auth:"no-creds",tags:["WHOIS"]},
+{title:"BGP ASN Lookup",description:"Discover IP ranges and ASN",command:"# Navigate to: https://bgp.he.net\n# Search for: {{domain}} or {{company}}",platform:"web",auth:"no-creds",tags:["ASN"]},
+{title:"ViewDNS Reverse IP",description:"Find domains on same IP",command:"# Navigate to: https://viewdns.info/reverseip/\n# Enter IP: {{target}}",platform:"web",auth:"no-creds",tags:["Reverse IP"]},
+{title:"Domaintools",description:"WHOIS and DNS history",command:"# Navigate to: https://domaintools.com\n# Search: {{domain}}",platform:"web",auth:"no-creds",tags:["WHOIS"]},
 {title:"WHOIS Lookup",description:"Domain registration info",command:"whois {{domain}}",platform:"linux",auth:"no-creds",tags:["Registration"]},
-{title:"Shodan Search",description:"Exposed services discovery",command:"# Navigate to: https://www.shodan.io\\n# Search: org:\\\"{{company}}\\\" or net:{{target}}/24",platform:"web",auth:"no-creds",tags:["Services"]},
-{title:"Censys Search",description:"Internet-wide scanning",command:"# Navigate to: https://search.censys.io\\n# Search: services.service_name: http and autonomous_system.name: {{company}}",platform:"web",auth:"no-creds",tags:["Assets"]}
+{title:"Shodan Search",description:"Exposed services discovery",command:"# Navigate to: https://www.shodan.io\n# Search: org:\"{{company}}\" or net:{{target}}/24",platform:"web",auth:"no-creds",tags:["Services"]},
+{title:"Censys Search",description:"Internet-wide scanning",command:"# Navigate to: https://search.censys.io\n# Search: services.service_name: http and autonomous_system.name: {{company}}",platform:"web",auth:"no-creds",tags:["Assets"]}
 ]},
 subdomain:{title:"Subdomain Enumeration",icon:"🌐",description:"Discover subdomains",commands:[
 {title:"Subfinder",description:"Fast passive discovery",command:"subfinder -d {{domain}} -o subdomains.txt",platform:"linux",auth:"no-creds",tags:["Passive"]},
@@ -77,30 +77,30 @@ subdomain:{title:"Subdomain Enumeration",icon:"🌐",description:"Discover subdo
 {title:"Amass Passive",description:"Passive mode only",command:"amass enum -passive -d {{domain}} -o amass-passive.txt",platform:"linux",auth:"no-creds",tags:["Stealth"]},
 {title:"Assetfinder",description:"Quick discovery",command:"assetfinder --subs-only {{domain}} | tee assetfinder.txt",platform:"linux",auth:"no-creds",tags:["Quick"]},
 {title:"Sublist3r",description:"Search engine based",command:"python3 sublist3r.py -d {{domain}} -o sublist3r.txt",platform:"linux",auth:"no-creds",tags:["OSINT"]},
-{title:"DNSdumpster",description:"Visual DNS mapping",command:"# Navigate to: https://dnsdumpster.com\\n# Enter: {{domain}}",platform:"web",auth:"no-creds",tags:["Visual"]},
+{title:"DNSdumpster",description:"Visual DNS mapping",command:"# Navigate to: https://dnsdumpster.com\n# Enter: {{domain}}",platform:"web",auth:"no-creds",tags:["Visual"]},
 {title:"Gobuster DNS",description:"Brute force subdomains",command:"gobuster dns -d {{domain}} -w /usr/share/wordlists/seclists/Discovery/DNS/subdomains-top1million-5000.txt",platform:"linux",auth:"no-creds",tags:["Brute Force"]},
-{title:"crt.sh Certificate Transparency",description:"SSL certificate logs",command:"curl -s \\\"https://crt.sh/?q=%25.{{domain}}\\\" | grep -oP '(?<=<TD>)[^<]*\\\\.{{domain}}' | sort -u",platform:"linux",auth:"no-creds",tags:["SSL Certs"]}
+{title:"crt.sh Certificate Transparency",description:"SSL certificate logs",command:"curl -s \"https://crt.sh/?q=%25.{{domain}}\" | grep -oP '(?<=<TD>)[^<]*\\.{{domain}}' | sort -u",platform:"linux",auth:"no-creds",tags:["SSL Certs"]}
 ]},
 email:{title:"Email & User Discovery",icon:"📧",description:"Gather email addresses",commands:[
 {title:"theHarvester",description:"Multi-source harvest",command:"theHarvester -d {{domain}} -b all -f harvester.html",platform:"linux",auth:"no-creds",tags:["OSINT"]},
-{title:"Hunter.io",description:"Email finder",command:"# Navigate to: https://hunter.io\\n# Search: {{domain}}",platform:"web",auth:"no-creds",tags:["Email Patterns"]},
-{title:"linkedin2username",description:"Generate usernames from LinkedIn",command:"python3 linkedin2username.py -c \\\"{{company}}\\\" -n {{company}}_employees",platform:"linux",auth:"no-creds",tags:["LinkedIn"]},
-{title:"Have I Been Pwned",description:"Check for breaches",command:"# Navigate to: https://haveibeenpwned.com\\n# Search: {{email}}",platform:"web",auth:"no-creds",tags:["Breaches"]},
-{title:"DeHashed",description:"Search leaked credentials",command:"# Navigate to: https://www.dehashed.com\\n# Search: email:@{{domain}}",platform:"web",auth:"no-creds",tags:["Leaks"]},
+{title:"Hunter.io",description:"Email finder",command:"# Navigate to: https://hunter.io\n# Search: {{domain}}",platform:"web",auth:"no-creds",tags:["Email Patterns"]},
+{title:"linkedin2username",description:"Generate usernames from LinkedIn",command:"python3 linkedin2username.py -c \"{{company}}\" -n {{company}}_employees",platform:"linux",auth:"no-creds",tags:["LinkedIn"]},
+{title:"Have I Been Pwned",description:"Check for breaches",command:"# Navigate to: https://haveibeenpwned.com\n# Search: {{email}}",platform:"web",auth:"no-creds",tags:["Breaches"]},
+{title:"DeHashed",description:"Search leaked credentials",command:"# Navigate to: https://www.dehashed.com\n# Search: email:@{{domain}}",platform:"web",auth:"no-creds",tags:["Leaks"]},
 {title:"Google Dorks - Emails",description:"Find exposed emails",command:"# Google: site:{{domain}} intext:@{{domain}} filetype:pdf OR filetype:xlsx",platform:"web",auth:"no-creds",tags:["Google Dorks"]}
 ]},
 leaks:{title:"Credential & Data Leaks",icon:"🔐",description:"Search for exposed data",commands:[
 {title:"TruffleHog",description:"Git secret scanner",command:"trufflehog git https://github.com/{{company}}/repo --json > trufflehog.json",platform:"linux",auth:"no-creds",tags:["Git Secrets"]},
 {title:"GitLeaks",description:"Detect hardcoded secrets",command:"gitleaks detect --source https://github.com/{{company}}/repo -v",platform:"linux",auth:"no-creds",tags:["Git"]},
-{title:"Greyhat Warfare S3",description:"Find exposed S3 buckets",command:"# Navigate to: https://buckets.grayhatwarfare.com\\n# Search: {{company}} or {{domain}}",platform:"web",auth:"no-creds",tags:["Cloud Storage"]},
-{title:"Pastebin Search",description:"Search paste sites",command:"# Navigate to: https://psbdmp.ws\\n# Search: {{domain}}",platform:"web",auth:"no-creds",tags:["Paste Sites"]}
+{title:"Greyhat Warfare S3",description:"Find exposed S3 buckets",command:"# Navigate to: https://buckets.grayhatwarfare.com\n# Search: {{company}} or {{domain}}",platform:"web",auth:"no-creds",tags:["Cloud Storage"]},
+{title:"Pastebin Search",description:"Search paste sites",command:"# Navigate to: https://psbdmp.ws\n# Search: {{domain}}",platform:"web",auth:"no-creds",tags:["Paste Sites"]}
 ]},
 google_dorks:{title:"Google Dorking",icon:"🔎",description:"Advanced Google searches",commands:[
 {title:"Login Portals",description:"Find authentication pages",command:"# Google: site:{{domain}} inurl:login OR inurl:admin OR inurl:portal",platform:"web",auth:"no-creds",tags:["Login Pages"]},
 {title:"Exposed Documents",description:"Find public files",command:"# Google: site:{{domain}} filetype:pdf OR filetype:docx OR filetype:xlsx",platform:"web",auth:"no-creds",tags:["Documents"]},
 {title:"Config Files",description:"Exposed configurations",command:"# Google: site:{{domain}} ext:xml OR ext:conf OR ext:config OR ext:bak",platform:"web",auth:"no-creds",tags:["Config"]},
 {title:"Database Files",description:"Exposed databases",command:"# Google: site:{{domain}} ext:sql OR ext:db OR ext:dbf OR ext:mdb",platform:"web",auth:"no-creds",tags:["Databases"]},
-{title:"Directory Listings",description:"Exposed indexes",command:"# Google: site:{{domain}} intitle:\\\"index of\\\"",platform:"web",auth:"no-creds",tags:["Directory Listing"]}
+{title:"Directory Listings",description:"Exposed indexes",command:"# Google: site:{{domain}} intitle:\"index of\"",platform:"web",auth:"no-creds",tags:["Directory Listing"]}
 ]}
 },
 internal:{
@@ -122,7 +122,7 @@ network:{title:"Network & Host Discovery",icon:"🌐",description:"Discover host
 {title:"Responder",description:"Capture LLMNR/NBT-NS",command:"sudo responder -I eth0 -wf",platform:"linux",auth:"no-creds",tags:["Poisoning"]},
 {title:"ARP Scan",description:"Local network discovery",command:"sudo arp-scan -l",platform:"linux",auth:"no-creds",tags:["ARP"]},
 {title:"Netdiscover",description:"ARP reconnaissance",command:"sudo netdiscover -r {{target}}/24",platform:"linux",auth:"no-creds",tags:["ARP"]},
-{title:"PowerShell Ping Sweep",description:"Windows host discovery",command:"1..254 | ForEach-Object {ping -n 1 {{target}}.$_ | Select-String \\\"Reply\\\"}",platform:"windows",auth:"no-creds",tags:["PowerShell"]},
+{title:"PowerShell Ping Sweep",description:"Windows host discovery",command:"1..254 | ForEach-Object {ping -n 1 {{target}}.$_ | Select-String \"Reply\"}",platform:"windows",auth:"no-creds",tags:["PowerShell"]},
 {title:"PowerShell Port Scan",description:"Test port connectivity",command:"1..254 | ForEach-Object {Test-NetConnection -ComputerName {{target}}.$_ -Port 445 -InformationLevel Quiet}",platform:"windows",auth:"no-creds",tags:["Port Check"]}
 ]},
 dns:{title:"DNS Enumeration",icon:"🗺️",description:"Enumerate DNS records",commands:[
@@ -139,27 +139,27 @@ users:{title:"User Enumeration",icon:"👥",description:"Discover domain users",
 {title:"Kerbrute with Wordlist",description:"Use SecLists wordlist",command:"kerbrute userenum -d {{domain}} --dc {{target}} /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt",platform:"linux",auth:"no-creds",tags:["Wordlist"]},
 {title:"enum4linux Users",description:"Multi-method user enum",command:"enum4linux -U {{target}}",platform:"linux",auth:"no-creds",tags:["Automated"]},
 {title:"enum4linux Full",description:"Complete enumeration",command:"enum4linux -a {{target}}",platform:"linux",auth:"no-creds",tags:["Complete"]},
-{title:"rpcclient Null Session",description:"Enumerate via RPC",command:"rpcclient -U \\\"\\\" -N {{target}} -c enumdomusers",platform:"linux",auth:"no-creds",tags:["RPC"]},
+{title:"rpcclient Null Session",description:"Enumerate via RPC",command:"rpcclient -U \"\" -N {{target}} -c enumdomusers",platform:"linux",auth:"no-creds",tags:["RPC"]},
 {title:"CME RID Brute",description:"RID cycling",command:"crackmapexec smb {{target}} -u '' -p '' --rid-brute",platform:"linux",auth:"no-creds",tags:["RID Brute"]},
 {title:"CME User Enum (Auth)",description:"Detailed user enum",command:"crackmapexec smb {{target}} -u {{username}} -p {{password}} --users",platform:"linux",auth:"creds",tags:["Detailed"]},
-{title:"ldapsearch Anonymous",description:"Query via LDAP",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(objectClass=user)' sAMAccountName",platform:"linux",auth:"no-creds",tags:["LDAP"]},
-{title:"ldapsearch Authenticated",description:"Full user data",command:"ldapsearch -x -h {{target}} -D \\\"{{username}}@{{domain}}\\\" -w '{{password}}' -b \\\"DC={{domain_dc}}\\\" '(objectClass=user)' sAMAccountName mail",platform:"linux",auth:"creds",tags:["Authenticated"]},
+{title:"ldapsearch Anonymous",description:"Query via LDAP",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(objectClass=user)' sAMAccountName",platform:"linux",auth:"no-creds",tags:["LDAP"]},
+{title:"ldapsearch Authenticated",description:"Full user data",command:"ldapsearch -x -h {{target}} -D \"{{username}}@{{domain}}\" -w '{{password}}' -b \"DC={{domain_dc}}\" '(objectClass=user)' sAMAccountName mail",platform:"linux",auth:"creds",tags:["Authenticated"]},
 {title:"GetNPUsers ASREPRoast",description:"Find users without pre-auth",command:"impacket-GetNPUsers {{domain}}/ -dc-ip {{target}} -usersfile users.txt -format hashcat -outputfile asrep_hashes.txt",platform:"linux",auth:"no-creds",tags:["ASREPRoast"]},
 {title:"Get All Domain Users",description:"List all AD users",command:"Get-ADUser -Filter * | Select-Object Name, SamAccountName, Enabled",platform:"windows",auth:"creds",tags:["PowerShell"]},
-{title:"Find Kerberoastable Users",description:"Users with SPNs",command:"Get-ADUser -Filter {ServicePrincipalName -ne \\\"$null\\\"} -Properties ServicePrincipalName",platform:"windows",auth:"creds",tags:["Kerberoast"]},
+{title:"Find Kerberoastable Users",description:"Users with SPNs",command:"Get-ADUser -Filter {ServicePrincipalName -ne \"$null\"} -Properties ServicePrincipalName",platform:"windows",auth:"creds",tags:["Kerberoast"]},
 {title:"Password Never Expires",description:"Weak password policies",command:"Get-ADUser -Filter {PasswordNeverExpires -eq $true} -Properties PasswordNeverExpires | Select-Object Name",platform:"windows",auth:"creds",tags:["Weak Policy"]},
 {title:"Net User Domain",description:"Basic user list",command:"net user /domain",platform:"windows",auth:"creds",tags:["Basic"]},
 {title:"Windapsearch Users",description:"Python LDAP enum",command:"python3 windapsearch.py --dc-ip {{target}} -u {{username}}@{{domain}} -p {{password}} -U",platform:"linux",auth:"creds",tags:["Python"]}
 ]},
 groups:{title:"Group Enumeration",icon:"👥",description:"Enumerate groups",commands:[
 {title:"enum4linux Groups",description:"List domain groups",command:"enum4linux -G {{target}}",platform:"linux",auth:"no-creds",tags:["Groups"]},
-{title:"rpcclient Groups",description:"Enumerate via RPC",command:"rpcclient -U \\\"\\\" -N {{target}} -c enumdomgroups",platform:"linux",auth:"no-creds",tags:["RPC"]},
-{title:"ldapsearch Groups",description:"Query all groups",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(objectClass=group)' sAMAccountName member",platform:"linux",auth:"no-creds",tags:["LDAP"]},
-{title:"ldapsearch Domain Admins",description:"Get Domain Admins",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(memberOf=CN=Domain Admins,CN=Users,DC={{domain_dc}})'",platform:"linux",auth:"no-creds",tags:["Domain Admins"]},
+{title:"rpcclient Groups",description:"Enumerate via RPC",command:"rpcclient -U \"\" -N {{target}} -c enumdomgroups",platform:"linux",auth:"no-creds",tags:["RPC"]},
+{title:"ldapsearch Groups",description:"Query all groups",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(objectClass=group)' sAMAccountName member",platform:"linux",auth:"no-creds",tags:["LDAP"]},
+{title:"ldapsearch Domain Admins",description:"Get Domain Admins",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(memberOf=CN=Domain Admins,CN=Users,DC={{domain_dc}})'",platform:"linux",auth:"no-creds",tags:["Domain Admins"]},
 {title:"CME Group Enum",description:"List groups",command:"crackmapexec smb {{target}} -u {{username}} -p {{password}} --groups",platform:"linux",auth:"creds",tags:["Complete"]},
 {title:"Get All Groups",description:"List AD groups",command:"Get-ADGroup -Filter * | Select-Object Name, GroupCategory",platform:"windows",auth:"creds",tags:["PowerShell"]},
-{title:"Get Domain Admins",description:"Domain Admins members",command:"Get-ADGroupMember -Identity \\\"Domain Admins\\\" | Select-Object Name, SamAccountName",platform:"windows",auth:"creds",tags:["Critical"]},
-{title:"Get Enterprise Admins",description:"Forest-wide admins",command:"Get-ADGroupMember -Identity \\\"Enterprise Admins\\\" | Select-Object Name",platform:"windows",auth:"creds",tags:["Forest"]},
+{title:"Get Domain Admins",description:"Domain Admins members",command:"Get-ADGroupMember -Identity \"Domain Admins\" | Select-Object Name, SamAccountName",platform:"windows",auth:"creds",tags:["Critical"]},
+{title:"Get Enterprise Admins",description:"Forest-wide admins",command:"Get-ADGroupMember -Identity \"Enterprise Admins\" | Select-Object Name",platform:"windows",auth:"creds",tags:["Forest"]},
 {title:"Net Group",description:"List domain groups",command:"net group /domain",platform:"windows",auth:"creds",tags:["Basic"]},
 {title:"Find Privileged Groups",description:"AdminCount=1",command:"Get-ADGroup -Filter 'AdminCount -eq 1' | Select-Object Name",platform:"windows",auth:"creds",tags:["Privileged"]}
 ]},
@@ -170,24 +170,24 @@ smb:{title:"SMB Share Enumeration",icon:"📁",description:"Enumerate SMB shares
 {title:"smbclient Download All",description:"Recursive download",command:"smbclient //{{target}}/share -U '{{username}}%{{password}}' -c 'prompt OFF;recurse ON;mget *'",platform:"linux",auth:"creds",tags:["Download"]},
 {title:"smbmap List",description:"Map shares with permissions",command:"smbmap -H {{target}} -u {{username}} -p {{password}}",platform:"linux",auth:"creds",tags:["Permissions"]},
 {title:"smbmap Recursive",description:"Deep dive",command:"smbmap -H {{target}} -u {{username}} -p {{password}} -R",platform:"linux",auth:"creds",tags:["Recursive"]},
-{title:"smbmap Download File",description:"Download specific file",command:"smbmap -H {{target}} -u {{username}} -p {{password}} --download 'share\\\\path\\\\file.txt'",platform:"linux",auth:"creds",tags:["Download"]},
+{title:"smbmap Download File",description:"Download specific file",command:"smbmap -H {{target}} -u {{username}} -p {{password}} --download 'share\\path\\file.txt'",platform:"linux",auth:"creds",tags:["Download"]},
 {title:"CME Enumerate Shares",description:"List with access levels",command:"crackmapexec smb {{target}} -u {{username}} -p {{password}} --shares",platform:"linux",auth:"creds",tags:["Access Levels"]},
 {title:"CME Spider Shares",description:"Search for files",command:"crackmapexec smb {{target}} -u {{username}} -p {{password}} -M spider_plus",platform:"linux",auth:"creds",tags:["Spider"]},
 {title:"CME Writable Shares",description:"Find write access",command:"crackmapexec smb {{target}} -u {{username}} -p {{password}} --shares --filter-shares WRITE",platform:"linux",auth:"creds",tags:["Write Access"]},
 {title:"enum4linux Shares",description:"Enumerate shares",command:"enum4linux -S {{target}}",platform:"linux",auth:"no-creds",tags:["Basic"]},
-{title:"Net View",description:"List shares",command:"net view \\\\\\\\{{target}}",platform:"windows",auth:"no-creds",tags:["Native"]},
+{title:"Net View",description:"List shares",command:"net view \\\\{{target}}",platform:"windows",auth:"no-creds",tags:["Native"]},
 {title:"PowerShell Get Shares",description:"Enumerate via PowerShell",command:"Get-SmbShare -CimSession {{target}}",platform:"windows",auth:"creds",tags:["PowerShell"]}
 ]},
 ldap:{title:"LDAP Enumeration",icon:"📖",description:"Query AD via LDAP",commands:[
-{title:"ldapsearch All Objects",description:"Dump entire directory",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\"",platform:"linux",auth:"no-creds",tags:["Complete"]},
-{title:"ldapsearch Computers",description:"Enumerate computers",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(objectClass=computer)' dNSHostName operatingSystem",platform:"linux",auth:"no-creds",tags:["Computers"]},
-{title:"ldapsearch Admin Accounts",description:"Find privileged accounts",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(adminCount=1)' sAMAccountName",platform:"linux",auth:"no-creds",tags:["Privileged"]},
-{title:"ldapsearch Emails",description:"Extract email addresses",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(objectClass=user)' mail sAMAccountName",platform:"linux",auth:"no-creds",tags:["Emails"]},
-{title:"ldapsearch Service Accounts",description:"Find accounts with SPNs",command:"ldapsearch -x -h {{target}} -b \\\"DC={{domain_dc}}\\\" '(&(objectClass=user)(servicePrincipalName=*))' sAMAccountName servicePrincipalName",platform:"linux",auth:"no-creds",tags:["SPNs"]},
+{title:"ldapsearch All Objects",description:"Dump entire directory",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\"",platform:"linux",auth:"no-creds",tags:["Complete"]},
+{title:"ldapsearch Computers",description:"Enumerate computers",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(objectClass=computer)' dNSHostName operatingSystem",platform:"linux",auth:"no-creds",tags:["Computers"]},
+{title:"ldapsearch Admin Accounts",description:"Find privileged accounts",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(adminCount=1)' sAMAccountName",platform:"linux",auth:"no-creds",tags:["Privileged"]},
+{title:"ldapsearch Emails",description:"Extract email addresses",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(objectClass=user)' mail sAMAccountName",platform:"linux",auth:"no-creds",tags:["Emails"]},
+{title:"ldapsearch Service Accounts",description:"Find accounts with SPNs",command:"ldapsearch -x -h {{target}} -b \"DC={{domain_dc}}\" '(&(objectClass=user)(servicePrincipalName=*))' sAMAccountName servicePrincipalName",platform:"linux",auth:"no-creds",tags:["SPNs"]},
 {title:"Windapsearch Complete",description:"All-in-one enum",command:"python3 windapsearch.py --dc-ip {{target}} -u {{username}}@{{domain}} -p {{password}} --da",platform:"linux",auth:"creds",tags:["Complete"]},
 {title:"Windapsearch Privileged",description:"High-value accounts",command:"python3 windapsearch.py --dc-ip {{target}} -u {{username}}@{{domain}} -p {{password}} --privileged-users",platform:"linux",auth:"creds",tags:["Privileged"]},
 {title:"Windapsearch Computers",description:"List computers",command:"python3 windapsearch.py --dc-ip {{target}} -u {{username}}@{{domain}} -p {{password}} -C",platform:"linux",auth:"creds",tags:["Computers"]},
-{title:"ldapdomaindump",description:"Generate HTML reports",command:"ldapdomaindump -u '{{domain}}\\\\{{username}}' -p {{password}} {{target}} -o /tmp/ldap_dump/",platform:"linux",auth:"creds",tags:["Reports"]},
+{title:"ldapdomaindump",description:"Generate HTML reports",command:"ldapdomaindump -u '{{domain}}\\{{username}}' -p {{password}} {{target}} -o /tmp/ldap_dump/",platform:"linux",auth:"creds",tags:["Reports"]},
 {title:"Get Domain Info",description:"Query domain properties",command:"Get-ADDomain",platform:"windows",auth:"creds",tags:["Domain Info"]},
 {title:"Get All OUs",description:"List organizational units",command:"Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName",platform:"windows",auth:"creds",tags:["OUs"]},
 {title:"Get All Computers",description:"Enumerate computers",command:"Get-ADComputer -Filter * | Select-Object Name, DNSHostName, OperatingSystem",platform:"windows",auth:"creds",tags:["Computers"]}
@@ -208,10 +208,10 @@ bloodhound:{title:"BloodHound Collection",icon:"🩸",description:"Collect AD re
 {title:"BloodHound-Python DCOnly",description:"Fast DC-only collection",command:"bloodhound-python -u {{username}} -p {{password}} -ns {{target}} -d {{domain}} -c DCOnly",platform:"linux",auth:"creds",tags:["Fast"]},
 {title:"BloodHound-Python Session",description:"Collect sessions",command:"bloodhound-python -u {{username}} -p {{password}} -ns {{target}} -d {{domain}} -c Session",platform:"linux",auth:"creds",tags:["Sessions"]},
 {title:"BloodHound-Python Zip",description:"Compressed output",command:"bloodhound-python -u {{username}} -p {{password}} -ns {{target}} -d {{domain}} -c all --zip",platform:"linux",auth:"creds",tags:["Compressed"]},
-{title:"SharpHound All",description:"Windows collector",command:".\\\\SharpHound.exe -c all",platform:"windows",auth:"creds",tags:["Complete"]},
-{title:"SharpHound Stealth",description:"Low-noise collection",command:".\\\\SharpHound.exe -c all --stealth",platform:"windows",auth:"creds",tags:["Stealth"]},
-{title:"SharpHound Specific",description:"Custom collection",command:".\\\\SharpHound.exe -c Session,ACL,Group,Trusts",platform:"windows",auth:"creds",tags:["Targeted"]},
-{title:"SharpHound Domain",description:"Specify domain",command:".\\\\SharpHound.exe -c all -d {{domain}}",platform:"windows",auth:"creds",tags:["Multi-Domain"]}
+{title:"SharpHound All",description:"Windows collector",command:".\\SharpHound.exe -c all",platform:"windows",auth:"creds",tags:["Complete"]},
+{title:"SharpHound Stealth",description:"Low-noise collection",command:".\\SharpHound.exe -c all --stealth",platform:"windows",auth:"creds",tags:["Stealth"]},
+{title:"SharpHound Specific",description:"Custom collection",command:".\\SharpHound.exe -c Session,ACL,Group,Trusts",platform:"windows",auth:"creds",tags:["Targeted"]},
+{title:"SharpHound Domain",description:"Specify domain",command:".\\SharpHound.exe -c all -d {{domain}}",platform:"windows",auth:"creds",tags:["Multi-Domain"]}
 ]},
 policy:{title:"Policy & Configuration",icon:"⚙️",description:"Enumerate policies",commands:[
 {title:"CME Password Policy",description:"Query password policy",command:"crackmapexec smb {{target}} -u {{username}} -p {{password}} --pass-pol",platform:"linux",auth:"creds",tags:["Password Policy"]},
@@ -229,18 +229,18 @@ impacket:{title:"Impacket Suite",icon:"🐍",description:"Python protocol tools"
 {title:"lookupsid",description:"RID cycling",command:"impacket-lookupsid {{domain}}/{{username}}:{{password}}@{{target}}",platform:"linux",auth:"creds",tags:["RID Brute"]},
 {title:"samrdump",description:"SAM remote dump",command:"impacket-samrdump {{domain}}/{{username}}:{{password}}@{{target}}",platform:"linux",auth:"creds",tags:["SAMR"]},
 {title:"rpcdump",description:"RPC endpoint mapper",command:"impacket-rpcdump {{domain}}/{{username}}:{{password}}@{{target}}",platform:"linux",auth:"creds",tags:["RPC"]},
-{title:"reg",description:"Remote registry query",command:"impacket-reg {{domain}}/{{username}}:{{password}}@{{target}} query -keyName HKLM\\\\\\\\SOFTWARE\\\\\\\\Microsoft\\\\\\\\Windows\\\\\\\\CurrentVersion\\\\\\\\Run",platform:"linux",auth:"creds",tags:["Registry"]},
+{title:"reg",description:"Remote registry query",command:"impacket-reg {{domain}}/{{username}}:{{password}}@{{target}} query -keyName HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",platform:"linux",auth:"creds",tags:["Registry"]},
 {title:"secretsdump",description:"Credential extraction",command:"impacket-secretsdump {{domain}}/{{username}}:{{password}}@{{target}}",platform:"linux",auth:"creds",tags:["Hashes","Admin Required"]}
 ]}
 }};
 function init(){renderContent();updateStats();['domain','target','username','password','company'].forEach(id=>{document.getElementById(id).addEventListener('input',renderContent)});document.getElementById('searchBox').addEventListener('input',e=>{currentFilters.search=e.target.value.toLowerCase();renderContent();updateStats()});window.addEventListener('scroll',()=>{document.getElementById('scrollTop').classList.toggle('visible',window.pageYOffset>300)})}
 function switchPhase(phase){currentPhase=phase;document.querySelectorAll('.phase-btn').forEach(btn=>{btn.classList.toggle('active',btn.getAttribute('onclick').includes(phase))});renderContent();updateStats()}
 function toggleFilter(btn,type,val){btn.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilters[type]=val;renderContent();updateStats()}
-function renderContent(){const data=db[currentPhase],main=document.getElementById('mainContent'),sidebar=document.getElementById('categoryNav');main.innerHTML='';sidebar.innerHTML='';let hasContent=false;Object.keys(data).forEach(catKey=>{const cat=data[catKey],filtered=cat.commands.filter(matchesFilters);if(filtered.length>0){hasContent=true;const link=document.createElement('a');link.href='#'+catKey;link.className='category-link';link.innerHTML='<span class="category-icon">'+cat.icon+'</span><span>'+cat.title+'</span>';sidebar.appendChild(link);const section=document.createElement('section');section.id=catKey;section.className='category-section';section.innerHTML='<div class="category-header"><span class="category-icon-large">'+cat.icon+'</span><div><h2 class="category-title">'+cat.title+'</h2><p class="category-description">'+cat.description+'</p></div></div><div class="commands-grid">'+filtered.map(renderCommandCard).join('')+'</div>';main.appendChild(section)}});if(!hasContent)main.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>No commands match your filters</p></div>'}
+function renderContent(){const data=db[currentPhase],main=document.getElementById('mainContent'),sidebar=document.getElementById('categoryNav');main.innerHTML='';sidebar.innerHTML='';let hasContent=false;Object.keys(data).forEach(catKey=>{const cat=data[catKey],filtered=cat.commands.filter(matchesFilters);if(filtered.length>0){hasContent=true;const link=document.createElement('a');link.href='#'+catKey;link.className='category-link';link.innerHTML='<span>'+cat.icon+'</span><span>'+cat.title+'</span>';sidebar.appendChild(link);const section=document.createElement('section');section.id=catKey;section.className='category-section';section.innerHTML='<div class="category-header"><span class="category-icon-large">'+cat.icon+'</span><div><h2 class="category-title">'+cat.title+'</h2><p class="category-description">'+cat.description+'</p></div></div><div class="commands-grid">'+filtered.map(renderCommandCard).join('')+'</div>';main.appendChild(section)}});if(!hasContent)main.innerHTML='<div class="no-results"><div class="no-results-icon">🔍</div><p>No commands match your filters</p></div>'}
 function matchesFilters(cmd){if(currentFilters.platform!=='all'&&cmd.platform!==currentFilters.platform)return false;if(currentFilters.auth!=='all'&&cmd.auth!==currentFilters.auth)return false;if(currentFilters.search){const searchable=(cmd.title+' '+cmd.description+' '+cmd.command+' '+(cmd.tags||[]).join(' ')).toLowerCase();if(!searchable.includes(currentFilters.search))return false}return true}
-function renderCommandCard(cmd){const processed=processCommandVariables(cmd.command);const platformTag=cmd.platform==='web'?'web':cmd.platform;return '<div class="command-card"><div class="command-header"><h3 class="command-title">'+cmd.title+'</h3><div class="command-tags"><span class="tag '+platformTag+'">'+platformTag+'</span><span class="tag '+cmd.auth+'">'+(cmd.auth==='creds'?'Creds':'No Creds')+'</span></div></div><p class="command-description">'+cmd.description+'</p>'+(cmd.tags?'<div style="margin-bottom:10px">'+cmd.tags.map(tag=>'<span class="tag" style="background:rgba(0,255,65,0.1);color:var(--p);border:1px solid var(--p);margin-right:5px;margin-bottom:5px;display:inline-block">'+tag+'</span>').join('')+'</div>':'')+'<div class="command-code-wrapper"><pre class="command-code">'+escapeHtml(processed)+'</pre><button class="copy-btn" onclick="copyCommand(\''+escapeHtml(processed).replace(/'/g,"\\'")+'\')">📋 Copy</button></div></div>'}
+function renderCommandCard(cmd){const processed=processCommandVariables(cmd.command);const platformTag=cmd.platform==='web'?'web':cmd.platform;const cmdId='cmd_'+Math.random().toString(36).substr(2,9);return '<div class="command-card"><div class="command-header"><h3 class="command-title">'+cmd.title+'</h3><div class="command-tags"><span class="tag '+platformTag+'">'+platformTag+'</span><span class="tag '+cmd.auth+'">'+(cmd.auth==='creds'?'Creds':'No Creds')+'</span></div></div><p class="command-description">'+cmd.description+'</p>'+(cmd.tags?'<div style="margin-bottom:10px">'+cmd.tags.map(tag=>'<span class="tag" style="background:rgba(0,255,65,0.1);color:var(--p);border:1px solid var(--p);margin-right:5px;margin-bottom:5px;display:inline-block">'+tag+'</span>').join('')+'</div>':'')+'<div class="command-code-wrapper"><pre class="command-code" id="'+cmdId+'">'+escapeHtml(processed)+'</pre><button class="copy-btn" onclick="copyCommandById(\''+cmdId+'\',this)">📋 Copy</button></div></div>'}
 function processCommandVariables(command){const vars={domain:document.getElementById('domain').value||'inlanefreight.local',target:document.getElementById('target').value||'10.10.10.10',username:document.getElementById('username').value||'user',password:document.getElementById('password').value||'password',company:document.getElementById('company').value||'Company'};const domainParts=vars.domain.split('.');vars.domain_dc=domainParts.map(p=>'DC='+p).join(',');let processed=command;Object.keys(vars).forEach(key=>{const regex=new RegExp('\\{\\{'+key+'\\}\\}','g');processed=processed.replace(regex,vars[key])});return processed}
-function copyCommand(cmd){navigator.clipboard.writeText(cmd).then(()=>{const btn=event.target;const orig=btn.innerHTML;btn.innerHTML='✅ Copied!';btn.classList.add('copied');setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000)})}
+function copyCommandById(cmdId,btn){const cmdElement=document.getElementById(cmdId);if(!cmdElement)return;const text=cmdElement.textContent;navigator.clipboard.writeText(text).then(()=>{const orig=btn.innerHTML;btn.innerHTML='✅ Copied!';btn.classList.add('copied');setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000)}).catch(err=>{console.error('Copy failed:',err);alert('Copy failed. Please copy manually.')})}
 function updateStats(){const data=db[currentPhase];let total=0,visible=0,cats=0;Object.keys(data).forEach(key=>{const cat=data[key],filtered=cat.commands.filter(matchesFilters);total+=cat.commands.length;visible+=filtered.length;if(filtered.length>0)cats++});document.getElementById('totalCommands').textContent=total;document.getElementById('visibleCommands').textContent=visible;document.getElementById('categoriesCount').textContent=cats}
 function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
