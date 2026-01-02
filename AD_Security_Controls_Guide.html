@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AD Enumeration & Security Controls Guide</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-orange: #d29922;
+            --accent-purple: #a371f7;
+            --border-color: #30363d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .os-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .os-btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .os-btn:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-tertiary);
+        }
+        
+        .os-btn.active {
+            border-color: var(--accent-green);
+            background: rgba(63, 185, 80, 0.1);
+        }
+        
+        .os-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .config-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .config-panel h3 {
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .config-item label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .config-item input {
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .config-item input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .config-item input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px 6px 0 0;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .tab-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .tab-btn.active {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            border-bottom-color: var(--bg-tertiary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 15px 20px;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        
+        .section-header:hover {
+            background: #282e36;
+        }
+        
+        .section-header h4 {
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header .badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: normal;
+        }
+        
+        .badge-windows {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--accent-blue);
+        }
+        
+        .badge-linux {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .badge-both {
+            background: rgba(163, 113, 247, 0.2);
+            color: var(--accent-purple);
+        }
+        
+        .section-header .chevron {
+            transition: transform 0.3s;
+        }
+        
+        .section-header.expanded .chevron {
+            transform: rotate(180deg);
+        }
+        
+        .section-body {
+            padding: 20px;
+            display: none;
+        }
+        
+        .section-body.expanded {
+            display: block;
+        }
+        
+        .command-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .command-header {
+            padding: 10px 15px;
+            background: var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .command-title {
+            font-weight: 600;
+            color: var(--accent-green);
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            padding: 5px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+        
+        .copy-btn.copied {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+        }
+        
+        .command-code {
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .command-code .var {
+            color: var(--accent-orange);
+        }
+        
+        .command-desc {
+            padding: 10px 15px;
+            background: rgba(88, 166, 255, 0.05);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .command-desc strong {
+            color: var(--accent-blue);
+        }
+        
+        .tool-info {
+            background: rgba(163, 113, 247, 0.1);
+            border: 1px solid rgba(163, 113, 247, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tool-info h5 {
+            color: var(--accent-purple);
+            margin-bottom: 8px;
+        }
+        
+        .tool-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .warning-box {
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .warning-box h5 {
+            color: var(--accent-red);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .tip-box {
+            background: rgba(63, 185, 80, 0.1);
+            border: 1px solid rgba(63, 185, 80, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tip-box h5 {
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+        
+        .tip-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .progress-tracker {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            z-index: 1000;
+        }
+        
+        .progress-tracker h5 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checklist-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .checklist-item.completed label {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        
+        .quick-ref {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .quick-ref-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .quick-ref-card h5 {
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .quick-ref-card code {
+            display: block;
+            padding: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .quick-ref-card p {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .progress-tracker {
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .os-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .os-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .sub-section {
+            margin-left: 20px;
+            padding-left: 15px;
+            border-left: 2px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        
+        .sub-section h5 {
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+        }
+        
+        td code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .highlight {
+            background: rgba(210, 153, 34, 0.3);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 AD Enumeration & Security Controls Guide</h1>
+            <p>Comprehensive Active Directory Enumeration Toolkit - Living Off the Land & Credentialed Enumeration</p>
+        </header>
+        
+        <div class="progress-tracker" id="progressTracker">
+            <h5>📊 Progress</h5>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <span class="progress-text" id="progressText">0 / 0 completed</span>
+        </div>
+        
+        <div class="os-selector">
+            <button class="os-btn" id="windowsBtn" onclick="selectOS('windows')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12V6.75L9 5.43v6.48L3 12M20 3v9h-9V4.5L20 3M3 13l6 .09v6.39l-6-1.06V13m17-1v9l-9-1.5v-7.35L21 12z"/></svg>
+                Windows Host
+            </button>
+            <button class="os-btn" id="linuxBtn" onclick="selectOS('linux')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139zm.529 3.405h.013c.213 0 .396.062.584.198.19.135.33.332.438.533.105.259.158.459.166.724 0-.02.006-.04.006-.06v.105a.086.086 0 01-.004-.021l-.004-.024a1.807 1.807 0 01-.15.706.953.953 0 01-.213.335.71.71 0 00-.088-.042c-.104-.045-.198-.064-.284-.133a1.312 1.312 0 00-.22-.066c.05-.06.146-.133.183-.198.053-.128.082-.264.088-.402v-.02a1.21 1.21 0 00-.061-.4c-.045-.134-.101-.2-.183-.333-.084-.066-.167-.132-.267-.132h-.016c-.093 0-.176.03-.262.132a.8.8 0 00-.205.334 1.18 1.18 0 00-.09.468v.018c.016.267.089.464.223.662.089.133.81.72 1.21.933.264.142.525.465.67.776.135.31.167.638.167.895v.001c0 .258-.033.528-.102.797-.064.265-.16.53-.29.793a5.058 5.058 0 01-.457.745 4.6 4.6 0 01-.61.698c-.09.076-.18.176-.277.248a1.767 1.767 0 01-.37.197.918.918 0 01-.47.001c-.11-.027-.223-.093-.327-.178a1.38 1.38 0 01-.267-.267l-.032-.04-.003-.003-.003-.003a.93.93 0 01-.135-.267 1.073 1.073 0 01-.07-.333v-.668c0-.333-.007-.667-.027-.934-.02-.334-.06-.6-.124-.87a3.26 3.26 0 00-.213-.6 2.09 2.09 0 00-.348-.533c-.157-.168-.357-.27-.59-.334a2.58 2.58 0 00-.757-.096c-.245 0-.494.035-.723.098-.229.065-.437.165-.6.298-.328.262-.524.622-.6.998-.074.378-.06.78.043 1.118.106.331.284.63.527.86.244.225.545.398.87.467.325.067.667.035.986-.1a1.67 1.67 0 00.412-.233c-.002.064-.003.128-.003.192v.867c0 .267.008.533.027.8.02.267.062.533.127.8.064.265.153.531.27.798.11.266.253.531.425.796.172.266.372.532.602.732.228.199.494.398.79.465.296.066.624.034.92-.098.296-.133.558-.398.69-.665.26-.533.306-1.064.252-1.53-.053-.465-.206-.865-.367-1.198-.162-.333-.337-.6-.498-.865a6.584 6.584 0 01-.437-.798c-.012-.026-.019-.053-.03-.08a2.04 2.04 0 01-.083-.267 1.373 1.373 0 01-.041-.333v-.668c0-.266.006-.533.017-.8.011-.265.033-.531.064-.797.033-.267.077-.533.135-.798.058-.266.132-.531.224-.797.092-.265.203-.53.336-.798.133-.265.286-.53.467-.732.18-.199.386-.398.62-.533.234-.133.496-.199.786-.265.29-.067.607-.1.95-.1z"/></svg>
+                Linux Host
+            </button>
+            <button class="os-btn" id="bothBtn" onclick="selectOS('both')">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                Show All
+            </button>
+        </div>
+        
+        <div class="config-panel">
+            <h3>⚙️ Configuration - Enter Your Target Information</h3>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label>Target Domain (FQDN)</label>
+                    <input type="text" id="targetDomain" placeholder="INLANEFREIGHT.LOCAL" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Domain Controller IP</label>
+                    <input type="text" id="dcIP" placeholder="172.16.5.5" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Target Host IP</label>
+                    <input type="text" id="targetIP" placeholder="172.16.5.130" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="forend" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Password</label>
+                    <input type="text" id="password" placeholder="Klmcargo2" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Target User (for specific queries)</label>
+                    <input type="text" id="targetUser" placeholder="mmorgan" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Target Group</label>
+                    <input type="text" id="targetGroup" placeholder="Domain Admins" oninput="updateCommands()">
+                </div>
+                <div class="config-item">
+                    <label>Target Share</label>
+                    <input type="text" id="targetShare" placeholder="Department Shares" oninput="updateCommands()">
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Search commands, tools, or techniques..." oninput="searchCommands()">
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('security-controls')">🛡️ Security Controls</button>
+            <button class="tab-btn" onclick="showTab('lotl')">🏠 Living Off the Land</button>
+            <button class="tab-btn" onclick="showTab('cred-enum')">🔑 Credentialed Enum</button>
+            <button class="tab-btn" onclick="showTab('tools')">🛠️ Tools Reference</button>
+            <button class="tab-btn" onclick="showTab('checklist')">✅ Checklist</button>
+        </div>
+        
+        <!-- Security Controls Tab -->
+        <div class="tab-content active" id="security-controls">
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🛡️ Windows Defender Enumeration</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About Windows Defender</h5>
+                        <p>Windows Defender (Microsoft Defender) is the built-in AV solution. Understanding its state helps determine if tools like PowerView will be blocked and what evasion techniques may be needed.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get Defender Status (PowerShell)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-MpComputerStatus</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Returns comprehensive Defender status including RealTimeProtectionEnabled, AntispywareEnabled, BehaviorMonitorEnabled, and signature versions. Check if RealTimeProtectionEnabled is True.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Query Defender Service (CMD)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">sc query windefend</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Quick check to see if Windows Defender service is running. Look for STATE: RUNNING.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get Specific Defender Settings</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, IoavProtectionEnabled, AntispywareEnabled, AntivirusEnabled, BehaviorMonitorEnabled, IsTamperProtected</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Filter to show only the most critical protection settings. Useful for quick assessment.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check Defender Exclusions</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-MpPreference | Select-Object -ExpandProperty ExclusionPath</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists paths excluded from Defender scanning. Attackers can place tools in excluded paths to avoid detection.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>📋 AppLocker Enumeration</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About AppLocker</h5>
+                        <p>AppLocker is Microsoft's application whitelisting solution. It controls which executables, scripts, DLLs, and installers users can run. Organizations often block cmd.exe and PowerShell.exe but forget alternate locations.</p>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h5>⚠️ Bypass Tip</h5>
+                        <p>If PowerShell is blocked at %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe, try %SystemRoot%\SysWOW64\WindowsPowerShell\v1.0\powershell.exe or PowerShell_ISE.exe</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get Effective AppLocker Policy</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-AppLockerPolicy -Effective | Select-Object -ExpandProperty RuleCollections</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows all effective AppLocker rules. Look for Deny rules that may block your tools and Allow rules that permit execution paths.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get AppLocker Policy as XML</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-AppLockerPolicy -Effective -Xml</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Exports AppLocker policy in XML format for detailed offline analysis.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Test AppLocker Policy Against File</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-AppLockerPolicy -Effective | Test-AppLockerPolicy -Path C:\Windows\System32\cmd.exe -User <span class="var">${DOMAIN}</span>\<span class="var">${USERNAME}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Tests if a specific file would be allowed to run under current policy for a specific user.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🔒 PowerShell Constrained Language Mode</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About Constrained Language Mode</h5>
+                        <p>CLM restricts PowerShell functionality by blocking COM objects, .NET types, XAML workflows, and PowerShell classes. It significantly limits offensive PowerShell tools.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check Language Mode</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">$ExecutionContext.SessionState.LanguageMode</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Returns current language mode. "FullLanguage" means no restrictions. "ConstrainedLanguage" means many features are blocked.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check Execution Policy</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ExecutionPolicy -List</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows execution policy for all scopes (MachinePolicy, UserPolicy, Process, CurrentUser, LocalMachine).</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Bypass Execution Policy (Current Process)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Set-ExecutionPolicy Bypass -Scope Process</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Temporarily bypasses execution policy for current process only. Reverts when process terminates.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🔑 LAPS Enumeration</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About LAPS</h5>
+                        <p>Local Administrator Password Solution (LAPS) randomizes local admin passwords. Finding users who can read LAPS passwords or machines without LAPS can provide privilege escalation paths.</p>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <h5>💡 Requires LAPSToolkit</h5>
+                        <p>These commands require LAPSToolkit PowerShell module. Import with: Import-Module .\LAPSToolkit.ps1</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find LAPS Delegated Groups</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Find-LAPSDelegatedGroups</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Parses ExtendedRights to find groups specifically delegated to read LAPS passwords per OU. Often shows privileged groups.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Users with Extended Rights</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Find-AdmPwdExtendedRights</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds users/groups with "All Extended Rights" on LAPS-enabled computers. These can read LAPS passwords and may be less protected.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get LAPS Computers and Passwords</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-LAPSComputers</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists computers with LAPS enabled, password expiration, and cleartext passwords (if current user has read access).</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Read LAPS Password (AD Module)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADComputer -Identity <span class="var">${TARGET_HOST}</span> -Properties ms-Mcs-AdmPwd | Select-Object name, ms-Mcs-AdmPwd</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Directly queries the ms-Mcs-AdmPwd attribute to retrieve LAPS password for a specific computer.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🔥 Firewall Enumeration</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Show All Firewall Profiles</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">netsh advfirewall show allprofiles</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows state (ON/OFF), policy, and logging settings for Domain, Private, and Public firewall profiles.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">List Firewall Rules</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">netsh advfirewall firewall show rule name=all</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all firewall rules. Useful for finding allowed inbound connections or ports.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">PowerShell - Get Firewall Rules</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-NetFirewallRule | Where-Object {$_.Enabled -eq 'True'} | Select-Object DisplayName, Direction, Action</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists enabled firewall rules with their direction (Inbound/Outbound) and action (Allow/Block).</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Living Off the Land Tab -->
+        <div class="tab-content" id="lotl">
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>💻 Basic Host Reconnaissance</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tip-box">
+                        <h5>💡 OPSEC Note</h5>
+                        <p>These native commands are less likely to trigger alerts than importing external tools. Use systeminfo for comprehensive output in a single command to minimize log entries.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">System Information (Comprehensive)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">systeminfo</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Comprehensive host info including OS version, hotfixes, network config, domain membership. Single command = fewer logs.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Hostname</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">hostname</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Returns the computer's NetBIOS name.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">OS Version (PowerShell)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">[System.Environment]::OSVersion.Version</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Returns OS version and revision level as version object.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Installed Hotfixes</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic qfe get Caption,Description,HotFixID,InstalledOn</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists installed patches/hotfixes. Useful for identifying missing patches and potential vulnerabilities.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Network Configuration</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">ipconfig /all</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Full network adapter configuration including IP, subnet, gateway, DNS servers, and DHCP info.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Environment Variables</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">set</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Displays all environment variables including PATH, USERDOMAIN, USERNAME, LOGONSERVER.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Name (CMD)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">echo %USERDOMAIN%</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Displays the domain name the host belongs to.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Logon Server</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">echo %logonserver%</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows the Domain Controller the host authenticated against.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Environment Variables (PowerShell)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ChildItem Env: | ft Key,Value</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists environment variables in table format. Good for finding paths, usernames, and system info.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>⬇️ PowerShell Downgrade Attack</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="warning-box">
+                        <h5>⚠️ OPSEC Consideration</h5>
+                        <p>The command to start PowerShell v2 WILL be logged. However, subsequent commands in the v2 session won't have Script Block Logging. Defenders may notice the downgrade attempt.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check Current PowerShell Version</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-Host</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows current PowerShell host version. v5.1+ has extensive logging.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Downgrade to PowerShell v2</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">powershell.exe -version 2</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Starts PowerShell v2 which lacks Script Block Logging. Commands in this session won't be logged to Event Viewer.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Verify Downgrade</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">$PSVersionTable.PSVersion</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Confirms you're running PowerShell v2. Should show Major: 2.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>👥 Check Logged-In Users</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tip-box">
+                        <h5>💡 Why This Matters</h5>
+                        <p>Avoid detection by checking if other users are logged in. Your actions could be noticed if an admin is actively using the machine.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Query Sessions</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">qwinsta</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all sessions on the host. Shows console, RDP sessions, and their state (Active/Disc).</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Query Users</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">query user</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows logged-in users with their session name, ID, state, and idle time.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🌐 Network Reconnaissance</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">ARP Table</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">arp -a</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists known hosts from ARP cache. Shows IPs and MACs of recently contacted hosts - potential lateral movement targets.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Routing Table</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">route print</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows known networks and routes. Networks in routing table are potential pivot targets.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Active Connections</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">netstat -ano</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows active TCP/UDP connections with PIDs. Useful for finding services and connections to other hosts.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>📊 WMI Enumeration</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About WMI</h5>
+                        <p>Windows Management Instrumentation (WMI) is a powerful built-in tool for querying system information locally and remotely.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Computer System Info</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic computersystem get Name,Domain,Manufacturer,Model,Username,Roles /format:List</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Basic host info including domain membership and logged-in user.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Process List</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic process list /format:list</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all running processes with details. Look for security tools, interesting services.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Information</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic ntdomain list /format:list</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows domain and DC information including trusts. Identifies domain controllers and trusted domains.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">User Accounts</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic useraccount list /format:list</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists local and cached domain user accounts with SIDs and status.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Group Information</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic group list /format:list</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists local groups on the system.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Service Accounts</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmic sysaccount list /format:list</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows system accounts used for services. Can reveal service account configurations.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🔧 Net Commands</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="warning-box">
+                        <h5>⚠️ Detection Risk</h5>
+                        <p>Net commands are commonly monitored by EDR. Consider using "net1" instead of "net" to potentially bypass string-based detection.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Password Policy</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net accounts /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows domain password policy including lockout threshold. Critical for safe password spraying.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Users</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net user /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all domain users.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Specific User Info</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net user <span class="var">${TARGET_USER}</span> /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Detailed info about specific user including group memberships, password settings, last logon.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Groups</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net group /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all domain groups.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Admins</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net group "Domain Admins" /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists members of Domain Admins group. Primary targets for escalation.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Controllers</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net group "Domain Controllers" /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all Domain Controllers in the domain.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Domain Computers</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net group "domain computers" /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all computers joined to the domain.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Local Administrators</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net localgroup Administrators</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists members of local Administrators group including domain groups.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Current Shares</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net share</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists shares on the local machine.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">View Remote Shares</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net view \\<span class="var">${DC_IP}</span> /all</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all shares on remote host including hidden shares.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">List Domain Computers</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">net view /domain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists computers visible in the domain.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🔎 Dsquery (LDAP Queries)</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About Dsquery</h5>
+                        <p>Dsquery is a built-in AD query tool available on DCs and systems with RSAT. The dsquery.dll exists on all modern Windows systems at C:\Windows\System32\dsquery.dll.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Query All Users</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">dsquery user</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all user objects in the domain with their distinguished names.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Query All Computers</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">dsquery computer</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all computer objects in the domain.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Wildcard Search (OU Contents)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">dsquery * "CN=Users,DC=<span class="var">${DOMAIN_PART1}</span>,DC=<span class="var">${DOMAIN_PART2}</span>"</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all objects in the Users container. Wildcard queries can search any OU.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Users with Password Not Required</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">dsquery * -filter "(&(objectCategory=person)(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=32))" -attr distinguishedName userAccountControl</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds users with PASSWD_NOTREQD flag set. These accounts may have blank passwords.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Domain Controllers</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">dsquery * -filter "(userAccountControl:1.2.840.113556.1.4.803:=8192)" -limit 5 -attr sAMAccountName</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds Domain Controllers using UAC flag 8192 (SERVER_TRUST_ACCOUNT).</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Credentialed Enumeration Tab -->
+        <div class="tab-content" id="cred-enum">
+            <div class="section linux-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🦀 CrackMapExec / NetExec</span>
+                        <span class="badge badge-linux">Linux</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About CrackMapExec</h5>
+                        <p>CrackMapExec (CME/NetExec) is a Swiss army knife for pentesting AD. It uses Impacket and PowerSploit under the hood. Supports SMB, WinRM, MSSQL, SSH protocols.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate Domain Users</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${DC_IP}</span> -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' --users</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Enumerates all domain users with badPwdCount attribute. Useful for targeting users for password spraying.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate Domain Groups</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${DC_IP}</span> -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' --groups</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all domain groups with member counts. Identify privileged groups to target.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check Logged-On Users</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${TARGET_IP}</span> -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' --loggedon-users</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Shows users currently logged into target host. Look for privileged users whose credentials might be in memory.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate Shares</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${DC_IP}</span> -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' --shares</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists accessible shares with READ/WRITE permissions. Identifies potential data exfil points.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Spider Shares for Files</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${DC_IP}</span> -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' -M spider_plus --share '<span class="var">${TARGET_SHARE}</span>'</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Recursively spiders share and lists all readable files. Output saved to /tmp/cme_spider_plus/</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check for Local Admin (Pwn3d!)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${TARGET_IP}</span> -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>'</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Tests authentication. If (Pwn3d!) appears, user has local admin rights on target.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Pass-the-Hash Authentication</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">crackmapexec smb <span class="var">${TARGET_IP}</span> -u '<span class="var">${USERNAME}</span>' -H 'NTLM_HASH_HERE'</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Authenticate using NTLM hash instead of password.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section linux-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>📁 SMBMap</span>
+                        <span class="badge badge-linux">Linux</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Check Share Access</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">smbmap -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' -d <span class="var">${DOMAIN}</span> -H <span class="var">${DC_IP}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists shares and access levels (NO ACCESS, READ ONLY, READ/WRITE).</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Recursive Directory Listing</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">smbmap -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' -d <span class="var">${DOMAIN}</span> -H <span class="var">${DC_IP}</span> -R '<span class="var">${TARGET_SHARE}</span>' --dir-only</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Recursively lists directories in a share. --dir-only excludes files for faster enumeration.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Download File from Share</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">smbmap -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' -d <span class="var">${DOMAIN}</span> -H <span class="var">${DC_IP}</span> --download '<span class="var">${TARGET_SHARE}</span>/path/to/file'</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Downloads a specific file from a share.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section linux-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>📞 rpcclient</span>
+                        <span class="badge badge-linux">Linux</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Connect with Credentials</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">rpcclient -U '<span class="var">${DOMAIN}</span>\<span class="var">${USERNAME}</span>%<span class="var">${PASSWORD}</span>' <span class="var">${DC_IP}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Establishes RPC connection for enumeration. Use commands below in the rpcclient prompt.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Null Session (if allowed)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">rpcclient -U "" -N <span class="var">${DC_IP}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Attempts anonymous connection. Works on misconfigured DCs.</div>
+                    </div>
+                    
+                    <div class="sub-section">
+                        <h5>rpcclient Commands (run after connecting)</h5>
+                        
+                        <div class="command-block">
+                            <div class="command-header">
+                                <span class="command-title">Enumerate Domain Users</span>
+                                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                            </div>
+                            <div class="command-code">enumdomusers</div>
+                            <div class="command-desc"><strong>Purpose:</strong> Lists all users with their RIDs. RIDs are unique identifiers for AD objects.</div>
+                        </div>
+                        
+                        <div class="command-block">
+                            <div class="command-header">
+                                <span class="command-title">Query User by RID</span>
+                                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                            </div>
+                            <div class="command-code">queryuser 0x1f4</div>
+                            <div class="command-desc"><strong>Purpose:</strong> Gets detailed info about user with specified RID. 0x1f4 (500) = built-in Administrator.</div>
+                        </div>
+                        
+                        <div class="command-block">
+                            <div class="command-header">
+                                <span class="command-title">Enumerate Domain Groups</span>
+                                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                            </div>
+                            <div class="command-code">enumdomgroups</div>
+                            <div class="command-desc"><strong>Purpose:</strong> Lists all domain groups with their RIDs.</div>
+                        </div>
+                        
+                        <div class="command-block">
+                            <div class="command-header">
+                                <span class="command-title">Query Group Members</span>
+                                <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                            </div>
+                            <div class="command-code">querygroupmem 0x200</div>
+                            <div class="command-desc"><strong>Purpose:</strong> Lists members of group by RID. 0x200 (512) = Domain Admins.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section linux-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🐍 Impacket Tools</span>
+                        <span class="badge badge-linux">Linux</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About Impacket</h5>
+                        <p>Impacket is a collection of Python scripts for working with network protocols. Essential for AD pentesting from Linux.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">psexec.py - Get SYSTEM Shell</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">psexec.py <span class="var">${DOMAIN}</span>/<span class="var">${USERNAME}</span>:'<span class="var">${PASSWORD}</span>'@<span class="var">${TARGET_IP}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Gets SYSTEM shell via SMB. Uploads executable to ADMIN$ share and creates service. Requires local admin rights.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">wmiexec.py - Stealthier Shell</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">wmiexec.py <span class="var">${DOMAIN}</span>/<span class="var">${USERNAME}</span>:'<span class="var">${PASSWORD}</span>'@<span class="var">${TARGET_IP}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Semi-interactive shell via WMI. No files written to disk, fewer logs. Runs as authenticated user, not SYSTEM.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">secretsdump.py - Dump Credentials</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">secretsdump.py <span class="var">${DOMAIN}</span>/<span class="var">${USERNAME}</span>:'<span class="var">${PASSWORD}</span>'@<span class="var">${DC_IP}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Dumps SAM, LSA secrets, cached creds, and NTDS.dit from DC. Requires admin rights.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">GetUserSPNs.py - Kerberoasting</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">GetUserSPNs.py <span class="var">${DOMAIN}</span>/<span class="var">${USERNAME}</span>:'<span class="var">${PASSWORD}</span>' -dc-ip <span class="var">${DC_IP}</span> -request</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds accounts with SPNs set and requests TGS tickets for offline cracking.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section linux-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🔍 Windapsearch</span>
+                        <span class="badge badge-linux">Linux</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate Domain Admins</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">python3 windapsearch.py --dc-ip <span class="var">${DC_IP}</span> -u <span class="var">${USERNAME}</span>@<span class="var">${DOMAIN}</span> -p '<span class="var">${PASSWORD}</span>' --da</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all Domain Admin group members.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Privileged Users (Recursive)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">python3 windapsearch.py --dc-ip <span class="var">${DC_IP}</span> -u <span class="var">${USERNAME}</span>@<span class="var">${DOMAIN}</span> -p '<span class="var">${PASSWORD}</span>' -PU</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Recursively searches for privileged users including nested group memberships.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate All Users</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">python3 windapsearch.py --dc-ip <span class="var">${DC_IP}</span> -u <span class="var">${USERNAME}</span>@<span class="var">${DOMAIN}</span> -p '<span class="var">${PASSWORD}</span>' -U</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all AD users.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate Computers</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">python3 windapsearch.py --dc-ip <span class="var">${DC_IP}</span> -u <span class="var">${USERNAME}</span>@<span class="var">${DOMAIN}</span> -p '<span class="var">${PASSWORD}</span>' -C</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all AD computers.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section linux-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🩸 BloodHound.py</span>
+                        <span class="badge badge-linux">Linux</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About BloodHound</h5>
+                        <p>BloodHound uses graph theory to reveal hidden attack paths in AD. bloodhound-python is the Python ingestor for collecting data from Linux.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Collect All Data</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">bloodhound-python -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' -ns <span class="var">${DC_IP}</span> -d <span class="var">${DOMAIN}</span> -c all</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Collects all data (users, groups, computers, sessions, ACLs, trusts). Creates JSON files for BloodHound GUI.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">DCOnly Collection (Stealth)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">bloodhound-python -u '<span class="var">${USERNAME}</span>' -p '<span class="var">${PASSWORD}</span>' -ns <span class="var">${DC_IP}</span> -d <span class="var">${DOMAIN}</span> -c DCOnly</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Only queries DC, doesn't connect to member computers. Stealthier but less session data.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Zip Results for Upload</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">zip -r bloodhound_data.zip *.json</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Compresses JSON files for easy upload to BloodHound GUI.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>📘 ActiveDirectory PowerShell Module</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Import Module</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Import-Module ActiveDirectory</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Loads the ActiveDirectory module. Required before using Get-AD* cmdlets.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get Domain Information</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADDomain</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Returns domain SID, functional level, child domains, DCs, and forest info.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Kerberoastable Accounts</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds users with SPNs set - targets for Kerberoasting attacks.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Enumerate Trust Relationships</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADTrust -Filter *</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all domain trusts with direction, type, and attributes.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get All Groups</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADGroup -Filter * | Select-Object Name</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all domain groups.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get Group Details</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADGroup -Identity "<span class="var">${TARGET_GROUP}</span>"</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Gets detailed information about a specific group.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get Group Members</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-ADGroupMember -Identity "<span class="var">${TARGET_GROUP}</span>"</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists members of specified group.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>👁️ PowerView</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About PowerView</h5>
+                        <p>PowerView is part of PowerSploit, now maintained by BC-Security. Extremely powerful for AD enumeration but may be flagged by AV.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Import PowerView</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Import-Module .\PowerView.ps1</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Loads PowerView into current session.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Get User Information</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-DomainUser -Identity <span class="var">${TARGET_USER}</span> -Domain <span class="var">${DOMAIN}</span> | Select-Object -Property name,samaccountname,description,memberof,whencreated,pwdlastset,lastlogontimestamp,admincount,serviceprincipalname,useraccountcontrol</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Detailed user info including admin count, SPN, group membership.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Recursive Group Membership</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-DomainGroupMember -Identity "<span class="var">${TARGET_GROUP}</span>" -Recurse</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Lists all group members including nested groups. Essential for finding hidden admin paths.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Map Domain Trusts</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-DomainTrustMapping</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Enumerates all trusts for current domain and discovered domains.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Test Local Admin Access</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Test-AdminAccess -ComputerName <span class="var">${TARGET_HOST}</span></div>
+                        <div class="command-desc"><strong>Purpose:</strong> Tests if current user has local admin rights on target host.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Users with SPN</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Get-DomainUser -SPN -Properties samaccountname,ServicePrincipalName</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds Kerberoastable accounts.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Interesting ACLs</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Find-InterestingDomainAcl</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds ACLs with modification rights set to non-built-in objects. Good for finding privilege escalation paths.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Domain User Location</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Find-DomainUserLocation</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds machines where users are logged in. Useful for hunting specific targets.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Find Accessible Shares</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">Find-DomainShare</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Finds reachable shares on domain machines.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🩸 SharpHound (Windows BloodHound)</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Collect All Data</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">.\SharpHound.exe -c All --zipfilename bloodhound_data</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Collects all data types (Group, LocalAdmin, Session, Trusts, ACL, etc.) and creates zip file.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">DCOnly Collection (Stealth)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">.\SharpHound.exe -c DCOnly --zipfilename bloodhound_stealth</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Only queries DC, no connections to member computers. Stealthier approach.</div>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Session Collection Only</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">.\SharpHound.exe -c Session --zipfilename sessions</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Collects only session data. Run multiple times during engagement for better coverage.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section windows-only">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4>
+                        <span>🐕 Snaffler - Share Hunting</span>
+                        <span class="badge badge-windows">Windows</span>
+                    </h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="tool-info">
+                        <h5>ℹ️ About Snaffler</h5>
+                        <p>Snaffler automatically finds readable shares and hunts for sensitive files (passwords, SSH keys, config files). Color-coded output by sensitivity.</p>
+                    </div>
+                    
+                    <div class="command-block">
+                        <div class="command-header">
+                            <span class="command-title">Run Snaffler</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+                        </div>
+                        <div class="command-code">.\Snaffler.exe -s -d <span class="var">${DOMAIN}</span> -o snaffler.log -v data</div>
+                        <div class="command-desc"><strong>Purpose:</strong> Hunts for sensitive files on readable shares. -s prints to console, -o logs to file, -v data shows only results.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tools Reference Tab -->
+        <div class="tab-content" id="tools">
+            <div class="quick-ref">
+                <div class="quick-ref-card">
+                    <h5>🔧 CrackMapExec (NetExec)</h5>
+                    <code>crackmapexec smb $IP -u $USER -p $PASS [OPTIONS]</code>
+                    <p>Swiss army knife for AD. Supports SMB, WinRM, MSSQL, SSH.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>📁 SMBMap</h5>
+                    <code>smbmap -u $USER -p $PASS -d $DOMAIN -H $IP</code>
+                    <p>SMB share enumeration and file operations.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>📞 rpcclient</h5>
+                    <code>rpcclient -U '$DOMAIN\$USER%$PASS' $IP</code>
+                    <p>MS-RPC enumeration. Use enumdomusers, queryuser commands.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🐍 psexec.py</h5>
+                    <code>psexec.py $DOMAIN/$USER:'$PASS'@$IP</code>
+                    <p>Get SYSTEM shell via SMB. Creates service on target.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🐍 wmiexec.py</h5>
+                    <code>wmiexec.py $DOMAIN/$USER:'$PASS'@$IP</code>
+                    <p>Semi-interactive shell via WMI. Stealthier than psexec.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🔍 windapsearch</h5>
+                    <code>windapsearch.py --dc-ip $DC -u $USER@$DOMAIN -p $PASS</code>
+                    <p>LDAP enumeration. --da for Domain Admins, -PU for privileged users.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🩸 bloodhound-python</h5>
+                    <code>bloodhound-python -u $USER -p $PASS -ns $DC -d $DOMAIN -c all</code>
+                    <p>BloodHound data collection from Linux.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>👁️ PowerView</h5>
+                    <code>Import-Module .\PowerView.ps1</code>
+                    <p>PowerShell AD enumeration. Get-Domain*, Find-* cmdlets.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🩸 SharpHound</h5>
+                    <code>.\SharpHound.exe -c All --zipfilename data</code>
+                    <p>Windows BloodHound collector. Creates JSON files for GUI.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🐕 Snaffler</h5>
+                    <code>.\Snaffler.exe -s -d $DOMAIN -o snaffler.log -v data</code>
+                    <p>Automated sensitive file hunting on shares.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🔑 LAPS Toolkit</h5>
+                    <code>Import-Module .\LAPSToolkit.ps1</code>
+                    <p>Find-LAPSDelegatedGroups, Get-LAPSComputers cmdlets.</p>
+                </div>
+                <div class="quick-ref-card">
+                    <h5>🎯 GetUserSPNs.py</h5>
+                    <code>GetUserSPNs.py $DOMAIN/$USER:'$PASS' -dc-ip $DC -request</code>
+                    <p>Kerberoasting - request TGS tickets for cracking.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4><span>📊 UAC Flags Reference</span></h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="table-wrapper">
+                        <table>
+                            <tr>
+                                <th>Flag</th>
+                                <th>Decimal</th>
+                                <th>Hex</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>ACCOUNTDISABLE</td>
+                                <td>2</td>
+                                <td>0x2</td>
+                                <td>Account is disabled</td>
+                            </tr>
+                            <tr>
+                                <td>LOCKOUT</td>
+                                <td>16</td>
+                                <td>0x10</td>
+                                <td>Account is locked out</td>
+                            </tr>
+                            <tr>
+                                <td>PASSWD_NOTREQD</td>
+                                <td>32</td>
+                                <td>0x20</td>
+                                <td>No password required</td>
+                            </tr>
+                            <tr>
+                                <td>PASSWD_CANT_CHANGE</td>
+                                <td>64</td>
+                                <td>0x40</td>
+                                <td>User cannot change password</td>
+                            </tr>
+                            <tr>
+                                <td>NORMAL_ACCOUNT</td>
+                                <td>512</td>
+                                <td>0x200</td>
+                                <td>Default user account</td>
+                            </tr>
+                            <tr>
+                                <td>DONT_EXPIRE_PASSWD</td>
+                                <td>65536</td>
+                                <td>0x10000</td>
+                                <td>Password never expires</td>
+                            </tr>
+                            <tr>
+                                <td>SERVER_TRUST_ACCOUNT</td>
+                                <td>8192</td>
+                                <td>0x2000</td>
+                                <td>Domain Controller</td>
+                            </tr>
+                            <tr>
+                                <td>DONT_REQ_PREAUTH</td>
+                                <td>4194304</td>
+                                <td>0x400000</td>
+                                <td>AS-REP Roastable</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h4><span>🔢 Common RIDs Reference</span></h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body">
+                    <div class="table-wrapper">
+                        <table>
+                            <tr>
+                                <th>RID (Hex)</th>
+                                <th>RID (Decimal)</th>
+                                <th>Object</th>
+                            </tr>
+                            <tr>
+                                <td>0x1f4</td>
+                                <td>500</td>
+                                <td>Built-in Administrator</td>
+                            </tr>
+                            <tr>
+                                <td>0x1f5</td>
+                                <td>501</td>
+                                <td>Guest</td>
+                            </tr>
+                            <tr>
+                                <td>0x1f6</td>
+                                <td>502</td>
+                                <td>krbtgt</td>
+                            </tr>
+                            <tr>
+                                <td>0x200</td>
+                                <td>512</td>
+                                <td>Domain Admins</td>
+                            </tr>
+                            <tr>
+                                <td>0x201</td>
+                                <td>513</td>
+                                <td>Domain Users</td>
+                            </tr>
+                            <tr>
+                                <td>0x202</td>
+                                <td>514</td>
+                                <td>Domain Guests</td>
+                            </tr>
+                            <tr>
+                                <td>0x203</td>
+                                <td>515</td>
+                                <td>Domain Computers</td>
+                            </tr>
+                            <tr>
+                                <td>0x204</td>
+                                <td>516</td>
+                                <td>Domain Controllers</td>
+                            </tr>
+                            <tr>
+                                <td>0x207</td>
+                                <td>519</td>
+                                <td>Enterprise Admins</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Checklist Tab -->
+        <div class="tab-content" id="checklist">
+            <div class="section">
+                <div class="section-header expanded" onclick="toggleSection(this)">
+                    <h4><span>✅ Enumeration Checklist</span></h4>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="section-body expanded">
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Check Windows Defender status (Get-MpComputerStatus)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate AppLocker policies (Get-AppLockerPolicy)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Check PowerShell Language Mode</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate LAPS configuration</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Check firewall status</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Get basic system information (systeminfo)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Check network configuration (ipconfig /all)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate ARP table (arp -a)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Check routing table (route print)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Check logged-in users (qwinsta)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate domain password policy</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate domain users</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate domain groups</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate Domain Admins group</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate domain trusts</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Enumerate accessible shares</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Hunt for sensitive files (Snaffler/Spider)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Find Kerberoastable accounts (SPN set)</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Find AS-REP Roastable accounts</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Run BloodHound collection</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Analyze BloodHound data for attack paths</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Test for local admin on key targets</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Hunt for user sessions on file servers</label>
+                    </div>
+                    <div class="checklist-item" onclick="toggleCheck(this)">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <label>Document all findings</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>AD Enumeration Guide | Based on HTB Academy - Active Directory Enumeration & Attacks</p>
+            <p>For authorized security testing only. Always obtain proper authorization.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Global state
+        let selectedOS = 'both';
+        let config = {
+            domain: '',
+            dcIP: '',
+            targetIP: '',
+            username: '',
+            password: '',
+            targetUser: '',
+            targetGroup: '',
+            targetShare: ''
+        };
+        
+        // OS Selection
+        function selectOS(os) {
+            selectedOS = os;
+            document.querySelectorAll('.os-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(os + 'Btn').classList.add('active');
+            
+            // Show/hide sections based on OS
+            document.querySelectorAll('.section').forEach(section => {
+                if (os === 'both') {
+                    section.classList.remove('hidden');
+                } else if (os === 'windows') {
+                    if (section.classList.contains('linux-only')) {
+                        section.classList.add('hidden');
+                    } else {
+                        section.classList.remove('hidden');
+                    }
+                } else if (os === 'linux') {
+                    if (section.classList.contains('windows-only')) {
+                        section.classList.add('hidden');
+                    } else {
+                        section.classList.remove('hidden');
+                    }
+                }
+            });
+        }
+        
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Section toggle
+        function toggleSection(header) {
+            header.classList.toggle('expanded');
+            header.nextElementSibling.classList.toggle('expanded');
+        }
+        
+        // Update commands with config values
+        function updateCommands() {
+            config = {
+                domain: document.getElementById('targetDomain').value || 'DOMAIN.LOCAL',
+                dcIP: document.getElementById('dcIP').value || 'DC_IP',
+                targetIP: document.getElementById('targetIP').value || 'TARGET_IP',
+                username: document.getElementById('username').value || 'USERNAME',
+                password: document.getElementById('password').value || 'PASSWORD',
+                targetUser: document.getElementById('targetUser').value || 'TARGET_USER',
+                targetGroup: document.getElementById('targetGroup').value || 'TARGET_GROUP',
+                targetShare: document.getElementById('targetShare').value || 'TARGET_SHARE'
+            };
+            
+            // Parse domain parts
+            const domainParts = config.domain.split('.');
+            const domainPart1 = domainParts[0] || 'DOMAIN';
+            const domainPart2 = domainParts[1] || 'LOCAL';
+            
+            // Update all command blocks
+            document.querySelectorAll('.command-code').forEach(block => {
+                let html = block.innerHTML;
+                
+                // Replace variables
+                html = html.replace(/\${DOMAIN}/g, config.domain);
+                html = html.replace(/\${DC_IP}/g, config.dcIP);
+                html = html.replace(/\${TARGET_IP}/g, config.targetIP);
+                html = html.replace(/\${USERNAME}/g, config.username);
+                html = html.replace(/\${PASSWORD}/g, config.password);
+                html = html.replace(/\${TARGET_USER}/g, config.targetUser);
+                html = html.replace(/\${TARGET_GROUP}/g, config.targetGroup);
+                html = html.replace(/\${TARGET_SHARE}/g, config.targetShare);
+                html = html.replace(/\${TARGET_HOST}/g, config.targetIP);
+                html = html.replace(/\${DOMAIN_PART1}/g, domainPart1);
+                html = html.replace(/\${DOMAIN_PART2}/g, domainPart2);
+                
+                block.innerHTML = html;
+            });
+        }
+        
+        // Copy command to clipboard
+        function copyCommand(btn) {
+            const codeBlock = btn.parentElement.nextElementSibling;
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        // Checklist functions
+        function toggleCheck(item) {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (event.target !== checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+            item.classList.toggle('completed', checkbox.checked);
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+            const total = checkboxes.length;
+            const checked = document.querySelectorAll('.checklist-item input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = checked + ' / ' + total + ' completed';
+        }
+        
+        // Search functionality
+        function searchCommands() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            document.querySelectorAll('.command-block').forEach(block => {
+                const text = block.textContent.toLowerCase();
+                if (searchTerm === '' || text.includes(searchTerm)) {
+                    block.style.display = 'block';
+                } else {
+                    block.style.display = 'none';
+                }
+            });
+            
+            document.querySelectorAll('.section').forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (searchTerm === '' || text.includes(searchTerm)) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            selectOS('both');
+            updateProgress();
+            updateCommands();
+        });
+    </script>
+</body>
+</html>
